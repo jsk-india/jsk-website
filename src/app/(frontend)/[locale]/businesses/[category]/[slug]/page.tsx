@@ -198,17 +198,20 @@ function ProductHeader({
   prefix,
   slug,
 }: {
-  product: { code?: string | null; name: string; shortDescription?: string | null }
+  // Payload document fields are all potentially null/undefined at the type level
+  product: { code?: string | null; name?: string | null; shortDescription?: string | null }
   prefix: string
   slug: string
 }) {
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
-        <span className="rounded bg-brand-red px-3 py-1 text-sm font-bold text-white">
-          {product.code}
-        </span>
-        <h1 className="text-3xl font-extrabold sm:text-4xl">{product.name}</h1>
+        {product.code && (
+          <span className="rounded bg-brand-red px-3 py-1 text-sm font-bold text-white">
+            {product.code}
+          </span>
+        )}
+        <h1 className="text-3xl font-extrabold sm:text-4xl">{product.name ?? ''}</h1>
       </div>
       {product.shortDescription && (
         <p className="mt-4 max-w-3xl text-lg text-ink-600">{product.shortDescription}</p>
