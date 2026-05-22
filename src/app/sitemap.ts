@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { getPayload } from '@/lib/payload'
 import { locales } from '@/lib/i18n'
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://jskindia.in'
+const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://jskbharat.com'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Wrap DB queries in try/catch — build must succeed even on a fresh DB
