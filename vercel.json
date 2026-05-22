@@ -1,5 +1,5 @@
 {
-  "buildCommand": "node_modules/.bin/next build",
+  "buildCommand": "node_modules/.bin/payload generate:types && node_modules/.bin/next build",
   "installCommand": "pnpm install --frozen-lockfile",
   "framework": "nextjs",
   "regions": ["sin1"]
