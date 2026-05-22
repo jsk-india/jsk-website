@@ -5,14 +5,23 @@ import { locales } from '@/lib/i18n'
 const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://jskindia.in'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const payload = await getPayload()
+  // Wrap DB queries in try/catch — build must succeed even on a fresh DB
+  let products = { docs: [] as any[] }
+  let verticals = { docs: [] as any[] }
+  let news = { docs: [] as any[] }
+  let jobs = { docs: [] as any[] }
 
-  const [products, verticals, news, jobs] = await Promise.all([
-    payload.find({ collection: 'products', limit: 200, where: { _status: { equals: 'published' } } }),
-    payload.find({ collection: 'verticals', limit: 50, where: { _status: { equals: 'published' } } }),
-    payload.find({ collection: 'news-articles', limit: 200, where: { _status: { equals: 'published' } } }),
-    payload.find({ collection: 'job-openings', limit: 100, where: { isActive: { equals: true } } }),
-  ])
+  try {
+    const payload = await getPayload()
+    ;[products, verticals, news, jobs] = await Promise.all([
+      payload.find({ collection: 'products', limit: 200, where: { _status: { equals: 'published' } } }),
+      payload.find({ collection: 'verticals', limit: 50, where: { _status: { equals: 'published' } } }),
+      payload.find({ collection: 'news-articles', limit: 200, where: { _status: { equals: 'published' } } }),
+      payload.find({ collection: 'job-openings', limit: 100, where: { isActive: { equals: true } } }),
+    ])
+  } catch {
+    // DB not ready yet (e.g. fresh deploy before migration) — return static routes only
+  }
 
   const staticRoutes = [
     '', '/about', '/businesses', '/clients', '/investors',

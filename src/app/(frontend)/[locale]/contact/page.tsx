@@ -1,4 +1,5 @@
 import { getPayload } from '@/lib/payload'
+import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Contact Us' }
@@ -9,7 +10,7 @@ export default async function ContactPage({ params }: Props) {
   const { locale } = await params
   const prefix = `/${locale}`
   const payload = await getPayload()
-  const settings = await payload.findGlobal({ slug: 'site-settings', locale })
+  const settings = await payload.findGlobal({ slug: 'site-settings', locale: locale as Locale })
 
   const addresses = (settings.addresses ?? []) as {
     label?: string; line1?: string; line2?: string; city?: string;
@@ -17,8 +18,10 @@ export default async function ContactPage({ params }: Props) {
     phone?: string; fax?: string; email?: string; mapsUrl?: string
   }[]
 
+  type Address = { label?: string; line1?: string; line2?: string; city?: string; state?: string; pin?: string; country?: string; phone?: string; fax?: string; email?: string; mapsUrl?: string }
+
   // Fallback addresses if CMS not yet configured
-  const fallback = [
+  const fallback: Address[] = [
     { label: 'Corporate Office', line1: '9, A. K. Naik Marg, CST', city: 'Mumbai — 400 001', phone: '+91 22 6625 3700', fax: '+91 22 6655 0780', email: 'jsk@jskindia.in' },
     { label: 'Works (Sayli)', line1: 'Survey No. 369/1/1/2, Behind Siyaram Silk Mills', city: 'Village Sayli, Silvassa — 396 230, U.T. of D. & N.H.' },
     { label: 'Works (Rakholi)', line1: 'Survey No. 126/1-B, Near Rakholi School', city: 'Rakholi, Silvassa — 396 240, U.T. of D. & N.H.' },

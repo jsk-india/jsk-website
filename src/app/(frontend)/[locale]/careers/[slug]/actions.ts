@@ -43,7 +43,7 @@ export async function submitApplication(
       collection: 'job-applications',
       data: {
         name, email, phone, coverLetter,
-        jobOpening: jobId || undefined,
+        jobOpening: jobId ? Number(jobId) : undefined,
         resumeFile: mediaDoc.id,
         status: 'new',
         source: 'website',
