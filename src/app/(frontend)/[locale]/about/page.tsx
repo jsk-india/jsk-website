@@ -76,7 +76,7 @@ export default async function AboutPage({ params }: Props) {
                 {p.area && <p className="mt-2 text-sm font-medium">Area: {p.area}</p>}
                 {p.capacities && p.capacities.length > 0 && (
                   <ul className="mt-3 space-y-1 text-sm text-ink-600">
-                    {p.capacities.map((c, i) => (
+                    {(p.capacities as { label?: string; value?: string }[]).map((c, i) => (
                       <li key={i}>• {c.label}: <strong>{c.value}</strong></li>
                     ))}
                   </ul>
