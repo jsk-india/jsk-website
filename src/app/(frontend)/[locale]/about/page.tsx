@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getPayload } from '@/lib/payload'
+import { mediaUrl, mediaAlt } from '@/lib/media'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'About Us' }
@@ -11,7 +13,9 @@ export default async function AboutPage({ params }: Props) {
   const prefix = `/${locale}`
   const payload = await getPayload()
 
-  const persons = await payload.find({ collection: 'persons', sort: 'order', limit: 20 })
+  // depth: 1 populates the `photo` upload field with the full media object
+  // (otherwise it's just an ID and mediaUrl() returns null).
+  const persons = await payload.find({ collection: 'persons', sort: 'order', limit: 20, depth: 1 })
   const certs = await payload.find({ collection: 'certifications', limit: 20 })
   const plants = await payload.find({ collection: 'plants', limit: 10 })
 
@@ -46,20 +50,52 @@ export default async function AboutPage({ params }: Props) {
       <section className="mt-16">
         <h2 className="text-2xl font-bold uppercase tracking-wide">Leadership</h2>
         <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {founder && (
-            <div className="rounded-lg border-2 border-brand-gold/30 bg-brand-gold-50/20 p-6">
-              <p className="text-xs font-semibold uppercase tracking-widest text-brand-red">Founder</p>
-              <h3 className="mt-2 text-xl font-bold">{founder.name}</h3>
-              <p className="mt-1 text-sm text-ink-600">{founder.role}</p>
-            </div>
-          )}
-          {board.map((p) => (
-            <div key={p.id} className="rounded-lg border border-surface-100 bg-white p-6 shadow-sm">
-              <h3 className="text-xl font-bold">{p.name}</h3>
-              <p className="mt-1 text-sm font-medium text-brand-red">{p.role}</p>
-              {p.qualifications && <p className="mt-3 text-sm text-ink-600">{p.qualifications}</p>}
-            </div>
-          ))}
+          {founder && (() => {
+            const photo = mediaUrl(founder.photo, 'card') ?? mediaUrl(founder.photo)
+            return (
+              <div className="overflow-hidden rounded-lg border-2 border-brand-gold/30 bg-brand-gold-50/20">
+                {photo && (
+                  <div className="relative aspect-[4/3] w-full bg-surface-100">
+                    <Image
+                      src={photo}
+                      alt={mediaAlt(founder.photo) || founder.name}
+                      fill
+                      className="object-cover"
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    />
+                  </div>
+                )}
+                <div className="p-6">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-brand-red">Founder</p>
+                  <h3 className="mt-2 text-xl font-bold">{founder.name}</h3>
+                  <p className="mt-1 text-sm text-ink-600">{founder.role}</p>
+                </div>
+              </div>
+            )
+          })()}
+          {board.map((p) => {
+            const photo = mediaUrl(p.photo, 'card') ?? mediaUrl(p.photo)
+            return (
+              <div key={p.id} className="overflow-hidden rounded-lg border border-surface-100 bg-white shadow-sm">
+                {photo && (
+                  <div className="relative aspect-[4/3] w-full bg-surface-100">
+                    <Image
+                      src={photo}
+                      alt={mediaAlt(p.photo) || p.name}
+                      fill
+                      className="object-cover"
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    />
+                  </div>
+                )}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold">{p.name}</h3>
+                  <p className="mt-1 text-sm font-medium text-brand-red">{p.role}</p>
+                  {p.qualifications && <p className="mt-3 text-sm text-ink-600">{p.qualifications}</p>}
+                </div>
+              </div>
+            )
+          })}
         </div>
       </section>
 
