@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { getPayload } from '@/lib/payload'
 import { localeLabels, locales, localizeHref } from '@/lib/i18n'
 import { isMedia } from '@/lib/media'
+import { MobileNav, type MobileNavItem } from './MobileNav'
 import type { Locale } from '@/lib/i18n'
 
 interface Props { locale: Locale }
@@ -23,6 +24,23 @@ export async function Header({ locale }: Props) {
   const logoMedia = isMedia(settings.logo) ? settings.logo : null
   const brochureUrl = isMedia(settings.brochure) ? settings.brochure.url : null
   const navItems = (nav.header ?? []) as NavItem[]
+
+  /**
+   * The same nav items we render on desktop, falling back to a hardcoded
+   * list when CMS Navigation hasn't been set up yet. Mobile drawer uses
+   * this directly so the two stay in sync.
+   */
+  const FALLBACK_NAV: MobileNavItem[] = [
+    { label: 'Home',       href: '/' },
+    { label: 'About',      href: '/about' },
+    { label: 'Businesses', href: '/businesses' },
+    { label: 'Clients',    href: '/clients' },
+    { label: 'Investors',  href: '/investors' },
+    { label: 'News',       href: '/news' },
+    { label: 'Careers',    href: '/careers' },
+    { label: 'Contact',    href: '/contact' },
+  ]
+  const effectiveNav: MobileNavItem[] = navItems.length > 0 ? navItems : FALLBACK_NAV
   const ctaLabel = nav.ctaLabel ?? 'Enquire Now'
   const ctaHref = nav.ctaHref ?? '/enquiry'
   const announcement = nav.announcement as { enabled?: boolean; message?: string; link?: string } | null
@@ -120,9 +138,19 @@ export async function Header({ locale }: Props) {
               </a>
             )}
             <Link href={localizeHref(ctaHref, prefix)}
-              className="rounded-md bg-brand-red px-4 py-2 text-sm font-semibold text-white hover:bg-brand-red-dark">
+              className="hidden rounded-md bg-brand-red px-4 py-2 text-sm font-semibold text-white hover:bg-brand-red-dark md:inline-block">
               {ctaLabel}
             </Link>
+
+            {/* Mobile menu — hamburger + drawer (md:hidden internally) */}
+            <MobileNav
+              locale={locale}
+              prefix={prefix}
+              items={effectiveNav}
+              ctaLabel={ctaLabel}
+              ctaHref={ctaHref}
+              brochureUrl={brochureUrl}
+            />
           </div>
         </div>
       </header>
