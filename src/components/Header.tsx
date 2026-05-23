@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { getPayload } from '@/lib/payload'
-import { localeLabels, locales } from '@/lib/i18n'
+import { localeLabels, locales, localizeHref } from '@/lib/i18n'
 import { isMedia } from '@/lib/media'
 import type { Locale } from '@/lib/i18n'
 
@@ -64,13 +64,13 @@ export async function Header({ locale }: Props) {
             {navItems.length > 0 ? (
               navItems.map((item, i) => (
                 <div key={i} className="relative group">
-                  <Link href={item.href ?? '#'} className="hover:text-brand-red">
+                  <Link href={localizeHref(item.href, prefix)} className="hover:text-brand-red">
                     {item.label}
                   </Link>
                   {item.children && item.children.length > 0 && (
                     <div className="absolute left-0 top-full hidden min-w-40 rounded-md border border-surface-100 bg-white shadow-lg group-hover:block">
                       {item.children.map((c, j) => (
-                        <Link key={j} href={c.href ?? '#'}
+                        <Link key={j} href={localizeHref(c.href, prefix)}
                           className="block px-4 py-2 text-sm hover:bg-surface-50 hover:text-brand-red">
                           {c.label}
                         </Link>
@@ -119,7 +119,7 @@ export async function Header({ locale }: Props) {
                 📄 Brochure
               </a>
             )}
-            <Link href={`${prefix}${ctaHref}`}
+            <Link href={localizeHref(ctaHref, prefix)}
               className="rounded-md bg-brand-red px-4 py-2 text-sm font-semibold text-white hover:bg-brand-red-dark">
               {ctaLabel}
             </Link>

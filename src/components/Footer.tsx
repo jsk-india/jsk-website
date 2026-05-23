@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getPayload } from '@/lib/payload'
 import { isMedia } from '@/lib/media'
+import { localizeHref } from '@/lib/i18n'
 import type { Locale } from '@/lib/i18n'
 
 interface Props { locale: Locale }
@@ -74,7 +75,7 @@ export async function Footer({ locale }: Props) {
                 <ul className="space-y-2 text-sm text-ink-300">
                   {(col.links ?? []).map((l, j) => (
                     <li key={j}>
-                      <Link href={l.href ?? '#'} className="hover:text-white">{l.label}</Link>
+                      <Link href={localizeHref(l.href, prefix)} className="hover:text-white">{l.label}</Link>
                     </li>
                   ))}
                 </ul>
@@ -110,7 +111,7 @@ export async function Footer({ locale }: Props) {
           <span>{copyright}</span>
           <div className="flex gap-4">
             {legalLinks.map((l, i) => (
-              <Link key={i} href={l.href ?? '#'} className="hover:text-white">{l.label}</Link>
+              <Link key={i} href={localizeHref(l.href, prefix)} className="hover:text-white">{l.label}</Link>
             ))}
           </div>
         </div>
