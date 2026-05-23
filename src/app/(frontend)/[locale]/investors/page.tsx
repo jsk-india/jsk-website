@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { getPayload } from '@/lib/payload'
+import { isMedia } from '@/lib/media'
 import type { Metadata } from 'next'
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -31,9 +31,13 @@ export default async function InvestorsPage({ params }: Props) {
   const { locale } = await params
   const payload = await getPayload()
 
+  // We need depth >= 1 so the `file` upload field is populated with url/mimeType.
+  // The `locale` arg is included for future-proofing localized titles.
+  void locale
   const docs = await payload.find({
     collection: 'investor-documents',
     sort: '-publishedAt',
+    depth: 1,
     limit: 200,
   })
 
@@ -75,10 +79,17 @@ export default async function InvestorsPage({ params }: Props) {
                         <td className="py-3 pr-4 font-medium">{doc.title}</td>
                         <td className="py-3 pr-4 text-ink-600">{doc.fy || ''}</td>
                         <td className="py-3 text-right">
-                          {doc.file ? (
-                            <span className="text-brand-red">📄 Download</span>
+                          {isMedia(doc.file) && doc.file.url ? (
+                            <a
+                              href={doc.file.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-semibold text-brand-red hover:underline"
+                            >
+                              📄 Download
+                            </a>
                           ) : doc.externalUrl ? (
-                            <a href={doc.externalUrl} target="_blank" rel="noopener"
+                            <a href={doc.externalUrl} target="_blank" rel="noopener noreferrer"
                               className="text-brand-red hover:underline">View →</a>
                           ) : (
                             <span className="text-ink-300">Coming soon</span>

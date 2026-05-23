@@ -74,5 +74,27 @@ export const SiteSettings: GlobalConfig = {
       type: 'upload',
       relationTo: 'media',
     },
+    {
+      name: 'brochure',
+      label: 'Company Brochure (PDF)',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { description: 'Shown as a download link in the header.' },
+    },
+    {
+      name: 'heroSlides',
+      label: 'Homepage Hero Slides',
+      type: 'array',
+      labels: { singular: 'Slide', plural: 'Slides' },
+      admin: { description: 'Rotating hero banner on the homepage. Leave empty to use the default static hero.' },
+      fields: [
+        { name: 'image', type: 'upload', relationTo: 'media', required: true },
+        { name: 'eyebrow', type: 'text', localized: true, admin: { description: 'Small text above the headline (e.g. "Since 1965").' } },
+        { name: 'headline', type: 'text', required: true, localized: true },
+        { name: 'subheadline', type: 'textarea', localized: true },
+        { name: 'ctaLabel', type: 'text', localized: true, defaultValue: 'Explore Businesses' },
+        { name: 'ctaHref', type: 'text', defaultValue: '/businesses' },
+      ],
+    },
   ],
 }

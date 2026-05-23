@@ -1408,6 +1408,27 @@ export interface SiteSetting {
     youtube?: string | null;
   };
   defaultSeoImage?: (number | null) | Media;
+  /**
+   * Shown as a download link in the header.
+   */
+  brochure?: (number | null) | Media;
+  /**
+   * Rotating hero banner on the homepage. Leave empty to use the default static hero.
+   */
+  heroSlides?:
+    | {
+        image: number | Media;
+        /**
+         * Small text above the headline (e.g. "Since 1965").
+         */
+        eyebrow?: string | null;
+        headline: string;
+        subheadline?: string | null;
+        ctaLabel?: string | null;
+        ctaHref?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1507,6 +1528,18 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         youtube?: T;
       };
   defaultSeoImage?: T;
+  brochure?: T;
+  heroSlides?:
+    | T
+    | {
+        image?: T;
+        eyebrow?: T;
+        headline?: T;
+        subheadline?: T;
+        ctaLabel?: T;
+        ctaHref?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

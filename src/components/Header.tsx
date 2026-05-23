@@ -21,6 +21,7 @@ export async function Header({ locale }: Props) {
     payload.findGlobal({ slug: 'site-settings', depth: 1 }),
   ])
   const logoMedia = isMedia(settings.logo) ? settings.logo : null
+  const brochureUrl = isMedia(settings.brochure) ? settings.brochure.url : null
   const navItems = (nav.header ?? []) as NavItem[]
   const ctaLabel = nav.ctaLabel ?? 'Enquire Now'
   const ctaHref = nav.ctaHref ?? '/enquiry'
@@ -108,6 +109,16 @@ export async function Header({ locale }: Props) {
               ))}
             </div>
 
+            {brochureUrl && (
+              <a
+                href={brochureUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden rounded-md border border-brand-red px-3 py-2 text-xs font-semibold text-brand-red hover:bg-brand-red hover:text-white lg:inline-block"
+              >
+                📄 Brochure
+              </a>
+            )}
             <Link href={`${prefix}${ctaHref}`}
               className="rounded-md bg-brand-red px-4 py-2 text-sm font-semibold text-white hover:bg-brand-red-dark">
               {ctaLabel}
