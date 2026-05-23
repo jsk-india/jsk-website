@@ -56,7 +56,7 @@ export async function Header({ locale }: Props) {
         </div>
       )}
 
-      <header className="sticky top-0 z-50 border-b border-surface-100 bg-surface-white/95 backdrop-blur-sm">
+      <header className="sticky top-0 z-[80] border-b border-surface-100 bg-surface-white/95 shadow-sm backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           {/* Logo — CMS-driven, falls back to text */}
           <Link href={prefix} className="flex items-center gap-2">

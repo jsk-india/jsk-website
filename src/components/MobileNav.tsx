@@ -60,49 +60,49 @@ export function MobileNav({ locale, prefix, items, ctaLabel, ctaHref, brochureUr
 
   return (
     <>
-      {/* Hamburger button — only visible on mobile */}
+      {/* Hamburger button — only on mobile, sits inside the header */}
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-md text-ink-900 hover:bg-surface-100"
+        className="relative z-[81] md:hidden inline-flex h-11 w-11 items-center justify-center rounded-md border border-brand-red bg-white text-brand-red shadow-sm hover:bg-brand-red hover:text-white"
         aria-label="Open menu"
         aria-expanded={open}
         aria-controls="mobile-nav-drawer"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round">
           <line x1="4" y1="7"  x2="20" y2="7"  />
           <line x1="4" y1="12" x2="20" y2="12" />
           <line x1="4" y1="17" x2="20" y2="17" />
         </svg>
       </button>
 
-      {/* Backdrop */}
+      {/* Backdrop — sits above the sticky header (z-80) */}
       <div
         onClick={() => setOpen(false)}
-        className={`fixed inset-0 z-[60] bg-ink-900/50 backdrop-blur-sm transition-opacity md:hidden ${
+        className={`fixed inset-0 z-[90] bg-ink-900/60 backdrop-blur-sm transition-opacity md:hidden ${
           open ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
         aria-hidden
       />
 
-      {/* Drawer panel */}
+      {/* Drawer panel — top of stack */}
       <aside
         id="mobile-nav-drawer"
-        className={`fixed right-0 top-0 z-[70] flex h-full w-80 max-w-[85vw] flex-col overflow-y-auto bg-white shadow-2xl transition-transform md:hidden ${
+        className={`fixed right-0 top-0 z-[100] flex h-full w-80 max-w-[85vw] flex-col overflow-y-auto bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
         aria-hidden={!open}
       >
-        {/* Drawer header */}
-        <div className="flex items-center justify-between border-b border-surface-100 px-5 py-4">
-          <span className="text-sm font-semibold uppercase tracking-widest text-ink-600">Menu</span>
+        {/* Drawer header — brand bar with title + close button */}
+        <div className="flex items-center justify-between bg-brand-red px-5 py-4 text-white">
+          <span className="text-sm font-bold uppercase tracking-widest">Menu</span>
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-ink-900 hover:bg-surface-100"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md text-white hover:bg-white/10"
             aria-label="Close menu"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round">
               <line x1="6" y1="6"  x2="18" y2="18" />
               <line x1="6" y1="18" x2="18" y2="6" />
             </svg>
