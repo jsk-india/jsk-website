@@ -52,6 +52,31 @@ const DEFAULT_HERO: HeroSlide = {
   ctaHref: '/businesses',
 }
 
+/** Stat shown in the homepage stats strip. */
+type Stat = { value: string; label: string }
+
+/** Fallback stats used when SiteSettings.stats is empty. */
+const DEFAULT_STATS: Stat[] = [
+  { value: '60+',      label: 'Years Experience' },
+  { value: '₹30 Bn',   label: 'Group Turnover' },
+  { value: '1,08,408', label: 'MT Capacity' },
+  { value: '500+',     label: 'Satisfied Customers' },
+  { value: '30+',      label: 'Countries Exported' },
+]
+
+/** Resolve stats from CMS, falling back to defaults if not configured. */
+function resolveStats(cmsStats: unknown): Stat[] {
+  if (!Array.isArray(cmsStats) || cmsStats.length === 0) return DEFAULT_STATS
+  return cmsStats
+    .map((s: Record<string, unknown>): Stat | null => {
+      const value = typeof s.value === 'string' ? s.value.trim() : ''
+      const label = typeof s.label === 'string' ? s.label.trim() : ''
+      if (!value || !label) return null
+      return { value, label }
+    })
+    .filter((s): s is Stat => s !== null)
+}
+
 interface Props {
   params: Promise<{ locale: string }>
 }
@@ -104,6 +129,7 @@ export default async function HomePage({ params }: Props) {
   const verticals = verticalsRes.docs
 
   const slides = resolveSlides(settings.heroSlides, locale)
+  const stats = resolveStats(settings.stats)
   const brochureUrl = isMedia(settings.brochure) ? settings.brochure.url : null
 
   return (
@@ -111,16 +137,10 @@ export default async function HomePage({ params }: Props) {
       {/* ── HERO (CMS-driven carousel) ── */}
       <HeroCarousel slides={slides} />
 
-      {/* ── STATS — sourced from company brochure ── */}
+      {/* ── STATS — CMS-driven via Site Settings > Homepage Stats ── */}
       <section className="border-b border-surface-100 bg-surface-50">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-10 sm:grid-cols-3 sm:px-6 lg:grid-cols-5">
-          {[
-            { value: '60+', label: 'Years Experience' },
-            { value: '₹30 Bn', label: 'Group Turnover' },
-            { value: '1,08,408', label: 'MT Capacity' },
-            { value: '500+', label: 'Satisfied Customers' },
-            { value: '30+', label: 'Countries Exported' },
-          ].map((s) => (
+          {stats.map((s) => (
             <div key={s.label} className="text-center">
               <p className="text-2xl font-bold text-brand-red sm:text-3xl">{s.value}</p>
               <p className="mt-1 text-sm text-ink-600">{s.label}</p>

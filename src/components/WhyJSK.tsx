@@ -4,7 +4,7 @@ const STRENGTHS = [
   { icon: '📦', title: 'Timely Delivery', body: 'Manufacturing systems geared to meet customer deadlines.' },
   { icon: '🔬', title: 'Quality System', body: 'ISO 9001 certified with in-process control & error prevention.' },
   { icon: '🌍', title: '1,000+ Clients', body: "Serving India's Who's Who — PGCIL, L&T, BHEL, Tata, RIL…" },
-  { icon: '💰', title: 'Sound Financials', body: '₹10 Bn group turnover with consistent growth trajectory.' },
+  { icon: '💰', title: 'Sound Financials', body: '₹30 Bn group turnover with consistent growth trajectory.' },
   { icon: '👨‍🔬', title: 'Qualified Team', body: 'Experienced & technically sound professionals at every level.' },
   { icon: '⚡', title: 'Innovation', body: 'New verticals: VEDA, Digital Substations, Cyber Security.' },
 ]

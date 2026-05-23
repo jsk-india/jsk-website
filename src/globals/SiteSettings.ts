@@ -96,5 +96,30 @@ export const SiteSettings: GlobalConfig = {
         { name: 'ctaHref', type: 'text', defaultValue: '/businesses' },
       ],
     },
+    {
+      name: 'stats',
+      label: 'Homepage Stats',
+      type: 'array',
+      labels: { singular: 'Stat', plural: 'Stats' },
+      admin: {
+        description:
+          'Headline numbers shown below the hero (e.g. "60+ Years Experience"). Leave empty to use built-in defaults. Recommended: 5 items so the row fills evenly at lg.',
+      },
+      fields: [
+        {
+          name: 'value',
+          type: 'text',
+          required: true,
+          admin: { description: 'The big number / figure, e.g. "60+", "\u20B930 Bn", "1,08,408".' },
+        },
+        {
+          name: 'label',
+          type: 'text',
+          required: true,
+          localized: true,
+          admin: { description: 'Short caption below the value, e.g. "Years Experience".' },
+        },
+      ],
+    },
   ],
 }

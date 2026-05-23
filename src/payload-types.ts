@@ -1429,6 +1429,22 @@ export interface SiteSetting {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Headline numbers shown below the hero (e.g. "60+ Years Experience"). Leave empty to use built-in defaults. Recommended: 5 items so the row fills evenly at lg.
+   */
+  stats?:
+    | {
+        /**
+         * The big number / figure, e.g. "60+", "₹30 Bn", "1,08,408".
+         */
+        value: string;
+        /**
+         * Short caption below the value, e.g. "Years Experience".
+         */
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1538,6 +1554,13 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         subheadline?: T;
         ctaLabel?: T;
         ctaHref?: T;
+        id?: T;
+      };
+  stats?:
+    | T
+    | {
+        value?: T;
+        label?: T;
         id?: T;
       };
   updatedAt?: T;
