@@ -1,5 +1,7 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getPayload } from '@/lib/payload'
+import { isMedia } from '@/lib/media'
 import type { Locale } from '@/lib/i18n'
 
 interface Props { locale: Locale }
@@ -36,7 +38,17 @@ export async function Footer({ locale }: Props) {
           {/* Brand column */}
           <div>
             <Link href={prefix} className="inline-block">
-              <span className="text-lg font-extrabold text-brand-gold">jsk</span>
+              {isMedia(settings.logoLight) && settings.logoLight.url ? (
+                <Image
+                  src={settings.logoLight.url}
+                  alt={settings.logoLight.alt ?? 'JSK Industries'}
+                  width={100}
+                  height={36}
+                  className="h-9 w-auto object-contain brightness-0 invert"
+                />
+              ) : (
+                <span className="text-lg font-extrabold text-brand-gold">jsk</span>
+              )}
             </Link>
             <p className="mt-1 text-sm text-ink-300">
               {(settings.tagline as string | null | undefined) ?? 'Powering Growth'}

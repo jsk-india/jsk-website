@@ -1,6 +1,8 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { getPayload } from '@/lib/payload'
 import { localeLabels, locales } from '@/lib/i18n'
+import { isMedia } from '@/lib/media'
 import type { Locale } from '@/lib/i18n'
 
 interface Props { locale: Locale }
@@ -14,7 +16,11 @@ type NavItem = {
 export async function Header({ locale }: Props) {
   const prefix = `/${locale}`
   const payload = await getPayload()
-  const nav = await payload.findGlobal({ slug: 'navigation', locale })
+  const [nav, settings] = await Promise.all([
+    payload.findGlobal({ slug: 'navigation', locale }),
+    payload.findGlobal({ slug: 'site-settings', depth: 1 }),
+  ])
+  const logoMedia = isMedia(settings.logo) ? settings.logo : null
   const navItems = (nav.header ?? []) as NavItem[]
   const ctaLabel = nav.ctaLabel ?? 'Enquire Now'
   const ctaHref = nav.ctaHref ?? '/enquiry'
@@ -33,10 +39,23 @@ export async function Header({ locale }: Props) {
 
       <header className="sticky top-0 z-50 border-b border-surface-100 bg-surface-white/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-          {/* Logo */}
+          {/* Logo — CMS-driven, falls back to text */}
           <Link href={prefix} className="flex items-center gap-2">
-            <span className="text-xl font-extrabold tracking-tight text-brand-red">jsk</span>
-            <span className="hidden text-xs text-ink-600 sm:block">Powering Growth</span>
+            {logoMedia?.url ? (
+              <Image
+                src={logoMedia.url}
+                alt={logoMedia.alt ?? 'JSK Industries'}
+                width={120}
+                height={40}
+                className="h-10 w-auto object-contain"
+                priority
+              />
+            ) : (
+              <>
+                <span className="text-xl font-extrabold tracking-tight text-brand-red">jsk</span>
+                <span className="hidden text-xs text-ink-600 sm:block">Powering Growth</span>
+              </>
+            )}
           </Link>
 
           {/* Nav — from CMS, fallback to defaults */}

@@ -8,6 +8,18 @@ export const SiteSettings: GlobalConfig = {
   },
   fields: [
     {
+      name: 'logo',
+      label: 'Logo (light background)',
+      type: 'upload',
+      relationTo: 'media',
+    },
+    {
+      name: 'logoLight',
+      label: 'Logo (dark background — for footer)',
+      type: 'upload',
+      relationTo: 'media',
+    },
+    {
       name: 'brandName',
       type: 'text',
       required: true,

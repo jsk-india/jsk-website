@@ -1379,6 +1379,8 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface SiteSetting {
   id: number;
+  logo?: (number | null) | Media;
+  logoLight?: (number | null) | Media;
   brandName: string;
   tagline?: string | null;
   primaryEmail?: string | null;
@@ -1474,6 +1476,8 @@ export interface Footer {
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
+  logo?: T;
+  logoLight?: T;
   brandName?: T;
   tagline?: T;
   primaryEmail?: T;
