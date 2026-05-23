@@ -30,3 +30,38 @@ body {
 h1, h2, h3, h4 {
   font-family: var(--font-family-heading);
 }
+
+/* ──────────────────────────────────────────────────────────────────────
+   Tactile click feedback — global rules.
+
+   Every <a> and <button> gets:
+     • instant scale-down on press (active:scale-[0.97])
+     • a default cursor-pointer where the browser doesn't already set it
+     • smooth transition so :hover and :active feel connected
+
+   Pair with <RouteProgressBar /> for full "click registered" feedback.
+   ────────────────────────────────────────────────────────────────────── */
+a, button, [role="button"] {
+  transition: transform 120ms ease, opacity 120ms ease, background-color 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+a:active,
+button:not(:disabled):active,
+[role="button"]:active {
+  transform: scale(0.97);
+}
+
+button:disabled,
+button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Always show a visible focus ring for keyboard users */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--color-brand-red);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
