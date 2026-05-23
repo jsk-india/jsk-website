@@ -13,6 +13,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { localeLabels, locales, localizeHref, type Locale } from '@/lib/i18n'
 
 export interface MobileNavItem {
@@ -33,7 +34,11 @@ interface Props {
 export function MobileNav({ locale, prefix, items, ctaLabel, ctaHref, brochureUrl }: Props) {
   const [open, setOpen] = useState(false)
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null)
+  const [mounted, setMounted] = useState(false)
   const pathname = usePathname()
+
+  /** Wait for client mount so we can safely portal to document.body. */
+  useEffect(() => { setMounted(true) }, [])
 
   /** Close drawer on route change. */
   useEffect(() => { setOpen(false) }, [pathname])
@@ -58,25 +63,14 @@ export function MobileNav({ locale, prefix, items, ctaLabel, ctaHref, brochureUr
     return () => mq.removeEventListener('change', onChange)
   }, [])
 
-  return (
+  /**
+   * Portal the backdrop + drawer to document.body so they escape the
+   * header's stacking context (z-[80]). Without this, page content
+   * with its own stacking contexts can render ABOVE the drawer.
+   */
+  const overlay = mounted && createPortal(
     <>
-      {/* Hamburger button — only on mobile, sits inside the header */}
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="relative z-[81] md:hidden inline-flex h-11 w-11 items-center justify-center rounded-md border border-brand-red bg-white text-brand-red shadow-sm hover:bg-brand-red hover:text-white"
-        aria-label="Open menu"
-        aria-expanded={open}
-        aria-controls="mobile-nav-drawer"
-      >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round">
-          <line x1="4" y1="7"  x2="20" y2="7"  />
-          <line x1="4" y1="12" x2="20" y2="12" />
-          <line x1="4" y1="17" x2="20" y2="17" />
-        </svg>
-      </button>
-
-      {/* Backdrop — sits above the sticky header (z-80) */}
+      {/* Backdrop */}
       <div
         onClick={() => setOpen(false)}
         className={`fixed inset-0 z-[90] bg-ink-900/60 backdrop-blur-sm transition-opacity md:hidden ${
@@ -85,10 +79,10 @@ export function MobileNav({ locale, prefix, items, ctaLabel, ctaHref, brochureUr
         aria-hidden
       />
 
-      {/* Drawer panel — top of stack */}
+      {/* Drawer panel */}
       <aside
         id="mobile-nav-drawer"
-        className={`fixed right-0 top-0 z-[100] flex h-full w-80 max-w-[85vw] flex-col overflow-y-auto bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden ${
+        className={`fixed right-0 top-0 z-[100] flex h-dvh w-80 max-w-[85vw] flex-col overflow-y-auto bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
         aria-hidden={!open}
@@ -200,6 +194,30 @@ export function MobileNav({ locale, prefix, items, ctaLabel, ctaHref, brochureUr
           </div>
         </div>
       </aside>
+    </>,
+    document.body,
+  )
+
+  return (
+    <>
+      {/* Hamburger button — stays inside the header where it belongs */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-md border border-brand-red bg-white text-brand-red shadow-sm hover:bg-brand-red hover:text-white"
+        aria-label="Open menu"
+        aria-expanded={open}
+        aria-controls="mobile-nav-drawer"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round">
+          <line x1="4" y1="7"  x2="20" y2="7"  />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="17" x2="20" y2="17" />
+        </svg>
+      </button>
+
+      {/* Portaled overlay — rendered at document.body to escape header stacking context */}
+      {overlay}
     </>
   )
 }
