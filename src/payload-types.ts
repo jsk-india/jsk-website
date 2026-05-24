@@ -1430,6 +1430,34 @@ export interface SiteSetting {
       }[]
     | null;
   /**
+   * Control which languages appear in the site language switcher. To ADD a brand-new language, ask a developer (it requires a code change because Payload generates DB columns per locale at build time). You CAN toggle enabled/disabled, reorder, and override labels/flags here without a rebuild.
+   */
+  languages?:
+    | {
+        /**
+         * ISO language code. Must match a locale registered in code.
+         */
+        code: 'en' | 'hi' | 'te' | 'ta';
+        /**
+         * Uncheck to hide this language from the public site switcher.
+         */
+        enabled?: boolean | null;
+        /**
+         * Native display name, e.g. "हिन्दी". Leave blank to use the built-in default.
+         */
+        nativeLabel?: string | null;
+        /**
+         * Optional emoji flag, e.g. "🇮🇳". Leave blank to use the built-in default.
+         */
+        flag?: string | null;
+        /**
+         * Lower numbers appear first in the dropdown.
+         */
+        order?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Headline numbers shown below the hero (e.g. "60+ Years Experience"). Leave empty to use built-in defaults. Recommended: 5 items so the row fills evenly at lg.
    */
   stats?:
@@ -1554,6 +1582,16 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         subheadline?: T;
         ctaLabel?: T;
         ctaHref?: T;
+        id?: T;
+      };
+  languages?:
+    | T
+    | {
+        code?: T;
+        enabled?: T;
+        nativeLabel?: T;
+        flag?: T;
+        order?: T;
         id?: T;
       };
   stats?:

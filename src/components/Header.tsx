@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { getPayload } from '@/lib/payload'
-import { localeLabels, locales, localizeHref } from '@/lib/i18n'
+import { localizeHref } from '@/lib/i18n'
 import { isMedia } from '@/lib/media'
+import { resolveLanguages } from '@/lib/languages'
+import { LocaleSwitcher } from './LocaleSwitcher'
 import { MobileNav, type MobileNavItem } from './MobileNav'
 import type { Locale } from '@/lib/i18n'
 
@@ -24,6 +26,7 @@ export async function Header({ locale }: Props) {
   const logoMedia = isMedia(settings.logo) ? settings.logo : null
   const brochureUrl = isMedia(settings.brochure) ? settings.brochure.url : null
   const navItems = (nav.header ?? []) as NavItem[]
+  const languages = resolveLanguages(settings.languages)
 
   /**
    * The same nav items we render on desktop, falling back to a hardcoded
@@ -113,18 +116,9 @@ export async function Header({ locale }: Props) {
 
           {/* Right side */}
           <div className="flex items-center gap-3">
-            {/* Locale switcher */}
-            <div className="hidden gap-1 text-xs sm:flex">
-              {locales.map((loc) => (
-                <Link key={loc} href={`/${loc}`}
-                  className={`rounded px-1.5 py-0.5 transition ${
-                    loc === locale
-                      ? 'bg-brand-red text-white'
-                      : 'text-ink-600 hover:bg-surface-100'
-                  }`}>
-                  {localeLabels[loc]}
-                </Link>
-              ))}
+            {/* Locale switcher — hidden on mobile, MobileNav has its own */}
+            <div className="hidden sm:block">
+              <LocaleSwitcher current={locale} options={languages} variant="compact" />
             </div>
 
             {brochureUrl && (
@@ -150,6 +144,7 @@ export async function Header({ locale }: Props) {
               ctaLabel={ctaLabel}
               ctaHref={ctaHref}
               brochureUrl={brochureUrl}
+              languages={languages}
             />
           </div>
         </div>

@@ -32,7 +32,7 @@ export const NewsArticles: CollectionConfig = {
     {
       name: 'tags',
       type: 'array',
-      fields: [{ name: 'tag', type: 'text', required: true }],
+      fields: [{ name: 'tag', type: 'text', required: true, localized: true }],
     },
     {
       name: 'seo',

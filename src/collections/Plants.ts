@@ -12,7 +12,7 @@ export const Plants: CollectionConfig = {
     { name: 'slug', type: 'text', required: true, unique: true, admin: { position: 'sidebar' } },
     { name: 'address', type: 'textarea' },
     { name: 'city', type: 'text', admin: { position: 'sidebar' } },
-    { name: 'area', type: 'text', admin: { description: 'e.g. 35,000 sq.m' } },
+    { name: 'area', type: 'text', localized: true, admin: { description: 'e.g. 35,000 sq.m' } },
     {
       name: 'capacities',
       type: 'array',

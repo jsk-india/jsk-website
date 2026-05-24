@@ -14,7 +14,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { localeLabels, locales, localizeHref, type Locale } from '@/lib/i18n'
+import { localizeHref, type Locale } from '@/lib/i18n'
+import { LocaleSwitcher, type LanguageOption } from './LocaleSwitcher'
 
 export interface MobileNavItem {
   label?: string | null
@@ -29,9 +30,10 @@ interface Props {
   ctaLabel: string
   ctaHref: string
   brochureUrl?: string | null
+  languages: LanguageOption[]
 }
 
-export function MobileNav({ locale, prefix, items, ctaLabel, ctaHref, brochureUrl }: Props) {
+export function MobileNav({ locale, prefix, items, ctaLabel, ctaHref, brochureUrl, languages }: Props) {
   const [open, setOpen] = useState(false)
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null)
   const [mounted, setMounted] = useState(false)
@@ -176,21 +178,9 @@ export function MobileNav({ locale, prefix, items, ctaLabel, ctaHref, brochureUr
             </a>
           )}
 
-          <div className="flex flex-wrap gap-2 pt-2">
-            <span className="w-full text-xs font-semibold uppercase tracking-widest text-ink-600">Language</span>
-            {locales.map((loc) => (
-              <Link
-                key={loc}
-                href={`/${loc}`}
-                className={`rounded px-2 py-1 text-xs ${
-                  loc === locale
-                    ? 'bg-brand-red text-white'
-                    : 'border border-surface-100 text-ink-600 hover:bg-surface-50'
-                }`}
-              >
-                {localeLabels[loc]}
-              </Link>
-            ))}
+          <div className="space-y-2 pt-2">
+            <span className="block text-xs font-semibold uppercase tracking-widest text-ink-600">Language</span>
+            <LocaleSwitcher current={locale} options={languages} variant="block" />
           </div>
         </div>
       </aside>

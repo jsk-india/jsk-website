@@ -9,7 +9,7 @@ export const Awards: CollectionConfig = {
   fields: [
     { name: 'name', type: 'text', required: true, localized: true },
     { name: 'year', type: 'number', required: true, admin: { position: 'sidebar' } },
-    { name: 'issuer', type: 'text' },
+    { name: 'issuer', type: 'text', localized: true },
     { name: 'image', type: 'upload', relationTo: 'media' },
     { name: 'description', type: 'textarea', localized: true },
   ],

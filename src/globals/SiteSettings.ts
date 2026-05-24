@@ -1,4 +1,5 @@
 import type { GlobalConfig } from 'payload'
+import { locales } from '@/lib/i18n'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
@@ -46,9 +47,9 @@ export const SiteSettings: GlobalConfig = {
       type: 'array',
       labels: { singular: 'Address', plural: 'Addresses' },
       fields: [
-        { name: 'label', type: 'text', required: true },
-        { name: 'line1', type: 'text', required: true },
-        { name: 'line2', type: 'text' },
+        { name: 'label', type: 'text', required: true, localized: true },
+        { name: 'line1', type: 'text', required: true, localized: true },
+        { name: 'line2', type: 'text', localized: true },
         { name: 'city', type: 'text', required: true },
         { name: 'state', type: 'text' },
         { name: 'pin', type: 'text' },
@@ -94,6 +95,48 @@ export const SiteSettings: GlobalConfig = {
         { name: 'subheadline', type: 'textarea', localized: true },
         { name: 'ctaLabel', type: 'text', localized: true, defaultValue: 'Explore Businesses' },
         { name: 'ctaHref', type: 'text', defaultValue: '/businesses' },
+      ],
+    },
+    {
+      name: 'languages',
+      label: 'Languages',
+      type: 'array',
+      labels: { singular: 'Language', plural: 'Languages' },
+      admin: {
+        description:
+          'Control which languages appear in the site language switcher. To ADD a brand-new language, ask a developer (it requires a code change because Payload generates DB columns per locale at build time). You CAN toggle enabled/disabled, reorder, and override labels/flags here without a rebuild.',
+      },
+      fields: [
+        {
+          name: 'code',
+          type: 'select',
+          required: true,
+          unique: true,
+          options: locales.map((code) => ({ label: code.toUpperCase(), value: code })),
+          admin: { description: 'ISO language code. Must match a locale registered in code.' },
+        },
+        {
+          name: 'enabled',
+          type: 'checkbox',
+          defaultValue: true,
+          admin: { description: 'Uncheck to hide this language from the public site switcher.' },
+        },
+        {
+          name: 'nativeLabel',
+          type: 'text',
+          admin: { description: 'Native display name, e.g. "हिन्दी". Leave blank to use the built-in default.' },
+        },
+        {
+          name: 'flag',
+          type: 'text',
+          admin: { description: 'Optional emoji flag, e.g. "🇮🇳". Leave blank to use the built-in default.' },
+        },
+        {
+          name: 'order',
+          type: 'number',
+          defaultValue: 0,
+          admin: { description: 'Lower numbers appear first in the dropdown.' },
+        },
       ],
     },
     {
