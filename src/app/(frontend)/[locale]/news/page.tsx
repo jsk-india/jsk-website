@@ -2,17 +2,16 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getPayload } from '@/lib/payload'
 import { mediaUrl, mediaAlt } from '@/lib/media'
-import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
+import { PAGE_DEFAULTS, textOr, mergeCategoryLabels, NEWS_CATEGORY_LABELS } from '@/lib/content-defaults'
+import { pageMetadata } from '@/lib/seo'
 import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'News & Updates' }
-
 interface Props { params: Promise<{ locale: string }> }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  press: 'Press Release', event: 'Event', award: 'Award',
-  exhibition: 'Exhibition', announcement: 'Announcement',
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  return pageMetadata(locale as Locale, 'news')
 }
 
 export default async function NewsPage({ params }: Props) {
@@ -30,6 +29,10 @@ export default async function NewsPage({ params }: Props) {
 
   const n = page.news ?? {}
   const d = PAGE_DEFAULTS.news
+  const categoryLabels = mergeCategoryLabels(
+    n.categoryLabels as { value?: string | null; label?: string | null }[] | null | undefined,
+    NEWS_CATEGORY_LABELS,
+  )
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
@@ -59,7 +62,7 @@ export default async function NewsPage({ params }: Props) {
                 <div className="p-6">
                   <div className="flex items-center gap-2 text-xs text-ink-600">
                     <span className="rounded-full bg-brand-gold-50 px-2 py-0.5 font-medium text-brand-red-dark">
-                      {CATEGORY_LABELS[a.category as string] ?? a.category}
+                      {categoryLabels[a.category as string] ?? a.category}
                     </span>
                     <span>
                       {new Date(a.publishedAt as string).toLocaleDateString('en-IN', {

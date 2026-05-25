@@ -1,11 +1,15 @@
 import { getPayload } from '@/lib/payload'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
+import { pageMetadata } from '@/lib/seo'
 import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Stories & Case Studies' }
-
 interface Props { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  return pageMetadata(locale as Locale, 'stories')
+}
 
 export default async function StoriesPage({ params }: Props) {
   const { locale } = await params

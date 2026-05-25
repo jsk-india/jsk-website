@@ -1,10 +1,12 @@
+import { PAGE_DEFAULTS } from '@/lib/content-defaults'
+
 /**
  * loading.tsx — automatic skeleton during route transitions.
  *
- * Next.js renders this instantly when a nested route is server-fetching.
- * Pairs with <RouteProgressBar /> for full click→nav feedback coverage.
+ * Stays pure-static (no CMS fetch) because adding a DB call here would
+ * delay EVERY navigation. The screen-reader label is rarely heard
+ * mid-transition — the hardcoded default is good enough.
  */
-
 export default function LoadingSkeleton() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6" aria-busy aria-live="polite">
@@ -22,7 +24,7 @@ export default function LoadingSkeleton() {
           ))}
         </div>
       </div>
-      <span className="sr-only">Loading…</span>
+      <span className="sr-only">{PAGE_DEFAULTS.loading.srLabel}</span>
     </div>
   )
 }

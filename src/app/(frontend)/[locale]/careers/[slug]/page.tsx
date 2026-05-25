@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPayload } from '@/lib/payload'
+import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
+import { buildMetadata } from '@/lib/seo'
+import { loadFormStrings } from '@/lib/form-strings'
 import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 import { ApplicationForm } from './ApplicationForm'
@@ -10,9 +13,12 @@ interface Props { params: Promise<{ locale: string; slug: string }> }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params
   const payload = await getPayload()
-  const res = await payload.find({ collection: 'job-openings', where: { slug: { equals: slug } }, locale: locale as Locale, limit: 1 })
+  const res = await payload.find({
+    collection: 'job-openings', where: { slug: { equals: slug } },
+    locale: locale as Locale, limit: 1,
+  })
   const job = res.docs[0]
-  return { title: job ? `${job.title} — Careers` : 'Job Opening' }
+  return buildMetadata(job ? `${job.title} — Careers` : 'Job Opening')
 }
 
 export default async function JobDetailPage({ params }: Props) {
@@ -20,22 +26,28 @@ export default async function JobDetailPage({ params }: Props) {
   const prefix = `/${locale}`
   const payload = await getPayload()
 
-  const res = await payload.find({
-    collection: 'job-openings',
-    where: { slug: { equals: slug }, isActive: { equals: true } },
-    locale: locale as Locale,
-    limit: 1,
-  })
+  const [res, page, formStrings] = await Promise.all([
+    payload.find({
+      collection: 'job-openings',
+      where: { slug: { equals: slug }, isActive: { equals: true } },
+      locale: locale as Locale,
+      limit: 1,
+    }),
+    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    loadFormStrings(locale as Locale),
+  ])
   const job = res.docs[0]
   if (!job) notFound()
 
   const responsibilities = (job.responsibilities ?? []) as { item?: string }[]
   const qualifications = (job.qualifications ?? []) as { item?: string }[]
+  const cd = page.careerDetail ?? {}
+  const d = PAGE_DEFAULTS.careerDetail
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
       <nav className="mb-6 text-sm text-ink-600">
-        <Link href={`${prefix}/careers`} className="hover:text-brand-red">Careers</Link>
+        <Link href={`${prefix}/careers`} className="hover:text-brand-red">{textOr(cd.breadcrumbCareers, d.breadcrumbCareers)}</Link>
         <span className="mx-2">›</span>
         <span className="font-medium text-ink-900">{job.title}</span>
       </nav>
@@ -58,7 +70,7 @@ export default async function JobDetailPage({ params }: Props) {
 
           {responsibilities.length > 0 && (
             <section>
-              <h2 className="text-xl font-bold">Responsibilities</h2>
+              <h2 className="text-xl font-bold">{textOr(cd.responsibilitiesHeading, d.responsibilitiesHeading)}</h2>
               <ul className="mt-4 list-inside list-disc space-y-2 text-ink-600">
                 {responsibilities.map((r, i) => r.item && <li key={i}>{r.item}</li>)}
               </ul>
@@ -67,7 +79,7 @@ export default async function JobDetailPage({ params }: Props) {
 
           {qualifications.length > 0 && (
             <section>
-              <h2 className="text-xl font-bold">Qualifications</h2>
+              <h2 className="text-xl font-bold">{textOr(cd.qualificationsHeading, d.qualificationsHeading)}</h2>
               <ul className="mt-4 list-inside list-disc space-y-2 text-ink-600">
                 {qualifications.map((q, i) => q.item && <li key={i}>{q.item}</li>)}
               </ul>
@@ -75,9 +87,9 @@ export default async function JobDetailPage({ params }: Props) {
           )}
 
           <section>
-            <h2 className="text-xl font-bold">Apply Now</h2>
+            <h2 className="text-xl font-bold">{textOr(cd.applyHeading, d.applyHeading)}</h2>
             <div className="mt-6">
-              <ApplicationForm jobId={String(job.id)} jobTitle={String(job.title)} />
+              <ApplicationForm jobId={String(job.id)} jobTitle={String(job.title)} strings={formStrings.application} />
             </div>
           </section>
         </div>
@@ -85,12 +97,21 @@ export default async function JobDetailPage({ params }: Props) {
         {/* Sidebar */}
         <aside className="space-y-6">
           <div className="rounded-lg border border-surface-100 bg-surface-50 p-6">
-            <h3 className="font-bold">Job Summary</h3>
+            <h3 className="font-bold">{textOr(cd.summaryHeading, d.summaryHeading)}</h3>
             <dl className="mt-3 space-y-2 text-sm">
-              {job.department && <div><dt className="text-ink-600">Department</dt><dd className="font-medium">{job.department}</dd></div>}
-              {job.location && <div><dt className="text-ink-600">Location</dt><dd className="font-medium">{job.location}</dd></div>}
-              {job.employmentType && <div><dt className="text-ink-600">Type</dt><dd className="font-medium capitalize">{(job.employmentType as string).replace('_', ' ')}</dd></div>}
-              {job.postedAt && <div><dt className="text-ink-600">Posted</dt><dd className="font-medium">{new Date(job.postedAt as string).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</dd></div>}
+              {job.department && <div><dt className="text-ink-600">{textOr(cd.departmentLabel, d.departmentLabel)}</dt><dd className="font-medium">{job.department}</dd></div>}
+              {job.location && <div><dt className="text-ink-600">{textOr(cd.locationLabel, d.locationLabel)}</dt><dd className="font-medium">{job.location}</dd></div>}
+              {job.employmentType && <div><dt className="text-ink-600">{textOr(cd.typeLabel, d.typeLabel)}</dt><dd className="font-medium capitalize">{(job.employmentType as string).replace('_', ' ')}</dd></div>}
+              {job.postedAt && (
+                <div>
+                  <dt className="text-ink-600">{textOr(cd.postedLabel, d.postedLabel)}</dt>
+                  <dd className="font-medium">
+                    {new Date(job.postedAt as string).toLocaleDateString(locale, {
+                      day: 'numeric', month: 'short', year: 'numeric',
+                    })}
+                  </dd>
+                </div>
+              )}
             </dl>
           </div>
         </aside>

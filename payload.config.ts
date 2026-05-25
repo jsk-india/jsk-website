@@ -33,6 +33,7 @@ import { Footer } from '@/globals/Footer'
 import { HomeContent } from '@/globals/HomeContent'
 import { Strengths } from '@/globals/Strengths'
 import { PageContent } from '@/globals/PageContent'
+import { Forms } from '@/globals/Forms'
 
 import { locales, defaultLocale } from '@/lib/i18n'
 
@@ -88,7 +89,7 @@ export default buildConfig({
     ContactMessages,
   ],
 
-  globals: [SiteSettings, Navigation, Footer, HomeContent, Strengths, PageContent],
+  globals: [SiteSettings, Navigation, Footer, HomeContent, Strengths, PageContent, Forms],
 
   plugins: [
     s3Storage({

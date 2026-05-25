@@ -79,6 +79,15 @@ export const PageContent: GlobalConfig = {
         { name: 'body', type: 'textarea', localized: true },
         { name: 'emptyTitle', type: 'text', localized: true, admin: { description: 'Shown when there are no published articles.' } },
         { name: 'emptyBody', type: 'textarea', localized: true },
+        {
+          name: 'categoryLabels',
+          type: 'array',
+          admin: { description: 'Translate the category badges on article cards. Match `value` to the select option keys (e.g. "press", "event").' },
+          fields: [
+            { name: 'value', type: 'text', required: true, admin: { description: 'The internal key. DO NOT translate this.' } },
+            { name: 'label', type: 'text', required: true, localized: true },
+          ],
+        },
       ],
     },
 
@@ -157,7 +166,117 @@ export const PageContent: GlobalConfig = {
         { name: 'headline', type: 'text', localized: true },
         { name: 'body', type: 'textarea', localized: true },
         { name: 'emptyMessage', type: 'text', localized: true, admin: { description: 'Shown when no documents are published.' } },
+        {
+          name: 'categoryLabels',
+          type: 'array',
+          admin: { description: 'Translate the category names shown above each document group. Match `value` to the select option keys (e.g. "annual_report").' },
+          fields: [
+            { name: 'value', type: 'text', required: true, admin: { description: 'The internal key (e.g. annual_report). DO NOT translate this.' } },
+            { name: 'label', type: 'text', required: true, localized: true },
+          ],
+        },
+      ],
+    },
+
+    // ── /businesses/[category]/[product] (product detail template) ─
+    {
+      name: 'productDetail',
+      type: 'group',
+      label: 'Product Detail Page (template)',
+      admin: { description: 'Strings reused across every product detail page.' },
+      fields: [
+        { name: 'galleryHeading',        type: 'text', localized: true },
+        { name: 'specificationsHeading', type: 'text', localized: true },
+        { name: 'standardsHeading',      type: 'text', localized: true },
+        { name: 'applicationsHeading',   type: 'text', localized: true },
+        { name: 'ctaTitle',              type: 'text', localized: true },
+        { name: 'ctaBody',               type: 'textarea', localized: true },
+        { name: 'ctaButton',             type: 'text', localized: true },
+        { name: 'brochureButton',        type: 'text', localized: true },
+        { name: 'relatedHeading',        type: 'text', localized: true },
+        { name: 'breadcrumbBusinesses',  type: 'text', localized: true, admin: { description: 'Breadcrumb root label ("Businesses").' } },
+      ],
+    },
+
+    // ── /businesses/new-verticals/[slug] (vertical detail template) ─
+    {
+      name: 'verticalDetail',
+      type: 'group',
+      label: 'Vertical Detail Page (template)',
+      fields: [
+        { name: 'partnerEyebrow',     type: 'text', localized: true, admin: { description: 'Small label above partner block, e.g. "Technology Partner".' } },
+        { name: 'visitPartnerLink',   type: 'text', localized: true },
+        { name: 'ctaTitleTemplate',   type: 'text', localized: true, admin: { description: 'Use {name} as a placeholder for the vertical name.' } },
+        { name: 'ctaBody',            type: 'textarea', localized: true },
+        { name: 'ctaButton',          type: 'text', localized: true },
+        { name: 'breadcrumbBusinesses',   type: 'text', localized: true },
+        { name: 'breadcrumbNewVerticals', type: 'text', localized: true },
+      ],
+    },
+
+    // ── /careers/[slug] (career detail template) ───────────────────
+    {
+      name: 'careerDetail',
+      type: 'group',
+      label: 'Career Detail Page (template)',
+      fields: [
+        { name: 'responsibilitiesHeading', type: 'text', localized: true },
+        { name: 'qualificationsHeading',   type: 'text', localized: true },
+        { name: 'applyHeading',            type: 'text', localized: true },
+        { name: 'summaryHeading',          type: 'text', localized: true },
+        { name: 'departmentLabel',         type: 'text', localized: true },
+        { name: 'locationLabel',           type: 'text', localized: true },
+        { name: 'typeLabel',               type: 'text', localized: true },
+        { name: 'postedLabel',             type: 'text', localized: true },
+        { name: 'breadcrumbCareers',       type: 'text', localized: true },
+      ],
+    },
+
+    // ── /news/[slug] (news detail template) ────────────────────────
+    {
+      name: 'newsDetail',
+      type: 'group',
+      label: 'News Detail Page (template)',
+      fields: [
+        { name: 'breadcrumbNews', type: 'text', localized: true },
+        { name: 'emptyBodyMessage', type: 'text', localized: true, admin: { description: 'Shown when an article has no body content yet.' } },
+      ],
+    },
+
+    // ── /businesses/[category] (category listing template) ─────────
+    {
+      name: 'categoryListing',
+      type: 'group',
+      label: 'Product Category Page (template)',
+      fields: [
+        { name: 'breadcrumbBusinesses', type: 'text', localized: true },
+        { name: 'emptyMessage',         type: 'text', localized: true },
+      ],
+    },
+
+    // ── 404 page ───────────────────────────────────────────────────
+    {
+      name: 'notFound',
+      type: 'group',
+      label: '404 / Not Found',
+      fields: [
+        { name: 'code',     type: 'text',     localized: true, admin: { description: 'Big number shown (e.g. "404").' } },
+        { name: 'title',    type: 'text',     localized: true },
+        { name: 'body',     type: 'textarea', localized: true },
+        { name: 'ctaLabel', type: 'text',     localized: true },
+      ],
+    },
+
+    // ── Loading skeleton ──────────────────────────────────────────
+    {
+      name: 'loading',
+      type: 'group',
+      label: 'Loading Skeleton',
+      admin: { description: 'Only the screen-reader-only text — the visual skeleton is purely structural.' },
+      fields: [
+        { name: 'srLabel', type: 'text', localized: true, admin: { description: 'e.g. "Loading…"' } },
       ],
     },
   ],
 }
+

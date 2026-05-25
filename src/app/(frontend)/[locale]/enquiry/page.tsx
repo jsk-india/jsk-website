@@ -1,14 +1,19 @@
 import type { Metadata } from 'next'
 import { getPayload } from '@/lib/payload'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
+import { pageMetadata } from '@/lib/seo'
+import { loadFormStrings } from '@/lib/form-strings'
 import type { Locale } from '@/lib/i18n'
 import { EnquiryForm } from './EnquiryForm'
-
-export const metadata: Metadata = { title: 'Enquiry' }
 
 interface Props {
   params: Promise<{ locale: string }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  return pageMetadata(locale as Locale, 'enquiry')
 }
 
 export default async function EnquiryPage({ params, searchParams }: Props) {
@@ -17,7 +22,10 @@ export default async function EnquiryPage({ params, searchParams }: Props) {
   const product = typeof sp.product === 'string' ? sp.product : undefined
 
   const payload = await getPayload()
-  const page = await payload.findGlobal({ slug: 'page-content', locale: locale as Locale })
+  const [page, formStrings] = await Promise.all([
+    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    loadFormStrings(locale as Locale),
+  ])
   const e = page.enquiry ?? {}
   const d = PAGE_DEFAULTS.enquiry
 
@@ -33,7 +41,7 @@ export default async function EnquiryPage({ params, searchParams }: Props) {
         )}
       </p>
       <div className="mt-10">
-        <EnquiryForm source={product ? `/businesses/${product}` : `/${locale}/enquiry`} />
+        <EnquiryForm source={product ? `/businesses/${product}` : `/${locale}/enquiry`} strings={formStrings.enquiry} />
       </div>
     </div>
   )

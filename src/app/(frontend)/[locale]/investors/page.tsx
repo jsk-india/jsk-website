@@ -1,33 +1,16 @@
 import { getPayload } from '@/lib/payload'
 import { isMedia } from '@/lib/media'
-import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
+import { PAGE_DEFAULTS, textOr, mergeCategoryLabels, INVESTOR_CATEGORY_LABELS } from '@/lib/content-defaults'
+import { pageMetadata } from '@/lib/seo'
 import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
-const CATEGORY_LABELS: Record<string, string> = {
-  annual_report: 'Annual Reports',
-  financial_result: 'Financial Results',
-  shareholding_pattern: 'Shareholding Pattern',
-  corporate_governance: 'Corporate Governance',
-  corporate_announcement: 'Corporate Announcements',
-  notice: 'Notices',
-  agm: 'Annual General Meeting',
-  postal_ballot: 'Postal Ballot',
-  annual_return: 'Annual Returns',
-  policy: 'Company Policies',
-  credit_rating: 'Credit Rating',
-  disclosure: 'Disclosures (LODR)',
-  secretarial_compliance: 'Secretarial Compliance',
-  iepf: 'IEPF',
-  committee_composition: 'Committee Composition',
-  investor_grievance: 'Investor Grievance',
-  corporate_presentation: 'Corporate Presentations',
-  other: 'Other',
-}
-
-export const metadata: Metadata = { title: 'Investors' }
-
 interface Props { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  return pageMetadata(locale as Locale, 'investors')
+}
 
 export default async function InvestorsPage({ params }: Props) {
   const { locale } = await params
@@ -40,6 +23,10 @@ export default async function InvestorsPage({ params }: Props) {
 
   const inv = page.investors ?? {}
   const d = PAGE_DEFAULTS.investors
+  const categoryLabels = mergeCategoryLabels(
+    inv.categoryLabels as { value?: string | null; label?: string | null }[] | null | undefined,
+    INVESTOR_CATEGORY_LABELS,
+  )
 
   // Group by category
   const grouped: Record<string, typeof docs.docs> = {}
@@ -49,7 +36,8 @@ export default async function InvestorsPage({ params }: Props) {
     grouped[cat].push(doc)
   }
 
-  const categoryOrder = Object.keys(CATEGORY_LABELS)
+  // Display order = the canonical key order from the defaults map.
+  const categoryOrder = Object.keys(INVESTOR_CATEGORY_LABELS)
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
@@ -63,7 +51,7 @@ export default async function InvestorsPage({ params }: Props) {
           {categoryOrder.filter((cat) => grouped[cat]).map((cat) => (
             <details key={cat} className="group rounded-lg border border-surface-100 bg-white">
               <summary className="flex cursor-pointer items-center justify-between px-6 py-4 font-bold hover:bg-surface-50">
-                <span>{CATEGORY_LABELS[cat] ?? cat}</span>
+                <span>{categoryLabels[cat] ?? cat}</span>
                 <span className="text-sm text-ink-600">{grouped[cat].length} doc{grouped[cat].length > 1 ? 's' : ''}</span>
               </summary>
               <div className="border-t border-surface-100 px-6 py-4">

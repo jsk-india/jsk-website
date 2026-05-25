@@ -131,6 +131,7 @@ export interface Config {
     'home-content': HomeContent;
     strengths: Strength;
     'page-content': PageContent;
+    forms: Form;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
@@ -139,6 +140,7 @@ export interface Config {
     'home-content': HomeContentSelect<false> | HomeContentSelect<true>;
     strengths: StrengthsSelect<false> | StrengthsSelect<true>;
     'page-content': PageContentSelect<false> | PageContentSelect<true>;
+    forms: FormsSelect<false> | FormsSelect<true>;
   };
   locale: 'en' | 'hi' | 'te' | 'ta';
   widgets: {
@@ -1726,6 +1728,19 @@ export interface PageContent {
      */
     emptyTitle?: string | null;
     emptyBody?: string | null;
+    /**
+     * Translate the category badges on article cards. Match `value` to the select option keys (e.g. "press", "event").
+     */
+    categoryLabels?:
+      | {
+          /**
+           * The internal key. DO NOT translate this.
+           */
+          value: string;
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   stories?: {
     headline?: string | null;
@@ -1784,6 +1799,140 @@ export interface PageContent {
      * Shown when no documents are published.
      */
     emptyMessage?: string | null;
+    /**
+     * Translate the category names shown above each document group. Match `value` to the select option keys (e.g. "annual_report").
+     */
+    categoryLabels?:
+      | {
+          /**
+           * The internal key (e.g. annual_report). DO NOT translate this.
+           */
+          value: string;
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  /**
+   * Strings reused across every product detail page.
+   */
+  productDetail?: {
+    galleryHeading?: string | null;
+    specificationsHeading?: string | null;
+    standardsHeading?: string | null;
+    applicationsHeading?: string | null;
+    ctaTitle?: string | null;
+    ctaBody?: string | null;
+    ctaButton?: string | null;
+    brochureButton?: string | null;
+    relatedHeading?: string | null;
+    /**
+     * Breadcrumb root label ("Businesses").
+     */
+    breadcrumbBusinesses?: string | null;
+  };
+  verticalDetail?: {
+    /**
+     * Small label above partner block, e.g. "Technology Partner".
+     */
+    partnerEyebrow?: string | null;
+    visitPartnerLink?: string | null;
+    /**
+     * Use {name} as a placeholder for the vertical name.
+     */
+    ctaTitleTemplate?: string | null;
+    ctaBody?: string | null;
+    ctaButton?: string | null;
+    breadcrumbBusinesses?: string | null;
+    breadcrumbNewVerticals?: string | null;
+  };
+  careerDetail?: {
+    responsibilitiesHeading?: string | null;
+    qualificationsHeading?: string | null;
+    applyHeading?: string | null;
+    summaryHeading?: string | null;
+    departmentLabel?: string | null;
+    locationLabel?: string | null;
+    typeLabel?: string | null;
+    postedLabel?: string | null;
+    breadcrumbCareers?: string | null;
+  };
+  newsDetail?: {
+    breadcrumbNews?: string | null;
+    /**
+     * Shown when an article has no body content yet.
+     */
+    emptyBodyMessage?: string | null;
+  };
+  categoryListing?: {
+    breadcrumbBusinesses?: string | null;
+    emptyMessage?: string | null;
+  };
+  notFound?: {
+    /**
+     * Big number shown (e.g. "404").
+     */
+    code?: string | null;
+    title?: string | null;
+    body?: string | null;
+    ctaLabel?: string | null;
+  };
+  /**
+   * Only the screen-reader-only text — the visual skeleton is purely structural.
+   */
+  loading?: {
+    /**
+     * e.g. "Loading…"
+     */
+    srLabel?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms".
+ */
+export interface Form {
+  id: number;
+  enquiry?: {
+    nameLabel?: string | null;
+    emailLabel?: string | null;
+    phoneLabel?: string | null;
+    companyLabel?: string | null;
+    countryLabel?: string | null;
+    /**
+     * Default pre-filled in the country input. Not localized (it's the actual default value).
+     */
+    countryDefault?: string | null;
+    messageLabel?: string | null;
+    messagePlaceholder?: string | null;
+    submitLabel?: string | null;
+    submittingLabel?: string | null;
+    successTitle?: string | null;
+    successBody?: string | null;
+  };
+  application?: {
+    nameLabel?: string | null;
+    emailLabel?: string | null;
+    phoneLabel?: string | null;
+    /**
+     * e.g. "Resume / CV *"
+     */
+    resumeLabel?: string | null;
+    /**
+     * Small text after the label, e.g. "(PDF, DOC · max 5 MB)"
+     */
+    resumeHint?: string | null;
+    coverLetterLabel?: string | null;
+    coverLetterPlaceholder?: string | null;
+    submitLabel?: string | null;
+    submittingLabel?: string | null;
+    successTitle?: string | null;
+    /**
+     * Use {jobTitle} as a placeholder for the job name.
+     */
+    successBodyTemplate?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -2040,6 +2189,13 @@ export interface PageContentSelect<T extends boolean = true> {
         body?: T;
         emptyTitle?: T;
         emptyBody?: T;
+        categoryLabels?:
+          | T
+          | {
+              value?: T;
+              label?: T;
+              id?: T;
+            };
       };
   stories?:
     | T
@@ -2090,6 +2246,116 @@ export interface PageContentSelect<T extends boolean = true> {
         headline?: T;
         body?: T;
         emptyMessage?: T;
+        categoryLabels?:
+          | T
+          | {
+              value?: T;
+              label?: T;
+              id?: T;
+            };
+      };
+  productDetail?:
+    | T
+    | {
+        galleryHeading?: T;
+        specificationsHeading?: T;
+        standardsHeading?: T;
+        applicationsHeading?: T;
+        ctaTitle?: T;
+        ctaBody?: T;
+        ctaButton?: T;
+        brochureButton?: T;
+        relatedHeading?: T;
+        breadcrumbBusinesses?: T;
+      };
+  verticalDetail?:
+    | T
+    | {
+        partnerEyebrow?: T;
+        visitPartnerLink?: T;
+        ctaTitleTemplate?: T;
+        ctaBody?: T;
+        ctaButton?: T;
+        breadcrumbBusinesses?: T;
+        breadcrumbNewVerticals?: T;
+      };
+  careerDetail?:
+    | T
+    | {
+        responsibilitiesHeading?: T;
+        qualificationsHeading?: T;
+        applyHeading?: T;
+        summaryHeading?: T;
+        departmentLabel?: T;
+        locationLabel?: T;
+        typeLabel?: T;
+        postedLabel?: T;
+        breadcrumbCareers?: T;
+      };
+  newsDetail?:
+    | T
+    | {
+        breadcrumbNews?: T;
+        emptyBodyMessage?: T;
+      };
+  categoryListing?:
+    | T
+    | {
+        breadcrumbBusinesses?: T;
+        emptyMessage?: T;
+      };
+  notFound?:
+    | T
+    | {
+        code?: T;
+        title?: T;
+        body?: T;
+        ctaLabel?: T;
+      };
+  loading?:
+    | T
+    | {
+        srLabel?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms_select".
+ */
+export interface FormsSelect<T extends boolean = true> {
+  enquiry?:
+    | T
+    | {
+        nameLabel?: T;
+        emailLabel?: T;
+        phoneLabel?: T;
+        companyLabel?: T;
+        countryLabel?: T;
+        countryDefault?: T;
+        messageLabel?: T;
+        messagePlaceholder?: T;
+        submitLabel?: T;
+        submittingLabel?: T;
+        successTitle?: T;
+        successBody?: T;
+      };
+  application?:
+    | T
+    | {
+        nameLabel?: T;
+        emailLabel?: T;
+        phoneLabel?: T;
+        resumeLabel?: T;
+        resumeHint?: T;
+        coverLetterLabel?: T;
+        coverLetterPlaceholder?: T;
+        submitLabel?: T;
+        submittingLabel?: T;
+        successTitle?: T;
+        successBodyTemplate?: T;
       };
   updatedAt?: T;
   createdAt?: T;

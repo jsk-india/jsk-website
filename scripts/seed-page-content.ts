@@ -207,10 +207,135 @@ async function main() {
         headline: 'Investor Relations',
         body: 'JSK Industries is committed to transparency and timely disclosure. Access our financial reports, governance documents, and regulatory filings below.',
         emptyMessage: 'Investor documents will be published here soon.',
+        categoryLabels: [
+          { value: 'annual_report',          label: 'Annual Reports' },
+          { value: 'financial_result',       label: 'Financial Results' },
+          { value: 'shareholding_pattern',   label: 'Shareholding Pattern' },
+          { value: 'corporate_governance',   label: 'Corporate Governance' },
+          { value: 'corporate_announcement', label: 'Corporate Announcements' },
+          { value: 'notice',                 label: 'Notices' },
+          { value: 'agm',                    label: 'Annual General Meeting' },
+          { value: 'postal_ballot',          label: 'Postal Ballot' },
+          { value: 'annual_return',          label: 'Annual Returns' },
+          { value: 'policy',                 label: 'Company Policies' },
+          { value: 'credit_rating',          label: 'Credit Rating' },
+          { value: 'disclosure',             label: 'Disclosures (LODR)' },
+          { value: 'secretarial_compliance', label: 'Secretarial Compliance' },
+          { value: 'iepf',                   label: 'IEPF' },
+          { value: 'committee_composition',  label: 'Committee Composition' },
+          { value: 'investor_grievance',     label: 'Investor Grievance' },
+          { value: 'corporate_presentation', label: 'Corporate Presentations' },
+          { value: 'other',                  label: 'Other' },
+        ],
+      },
+      productDetail: {
+        galleryHeading: 'Gallery',
+        specificationsHeading: 'Specifications',
+        standardsHeading: 'Standards & Compliance',
+        applicationsHeading: 'Applications',
+        ctaTitle: 'Interested in this product?',
+        ctaBody: 'Get a quote or request technical details from our team.',
+        ctaButton: 'Enquire Now',
+        brochureButton: '📄 Download Brochure',
+        relatedHeading: 'Related Products',
+        breadcrumbBusinesses: 'Businesses',
+      },
+      verticalDetail: {
+        partnerEyebrow: 'Technology Partner',
+        visitPartnerLink: 'Visit partner website →',
+        ctaTitleTemplate: 'Interested in {name}?',
+        ctaBody: 'Get in touch with our team to discuss how this solution can benefit your operations.',
+        ctaButton: 'Contact Us',
+        breadcrumbBusinesses: 'Businesses',
+        breadcrumbNewVerticals: 'New Verticals',
+      },
+      careerDetail: {
+        responsibilitiesHeading: 'Responsibilities',
+        qualificationsHeading: 'Qualifications',
+        applyHeading: 'Apply Now',
+        summaryHeading: 'Job Summary',
+        departmentLabel: 'Department',
+        locationLabel: 'Location',
+        typeLabel: 'Type',
+        postedLabel: 'Posted',
+        breadcrumbCareers: 'Careers',
+      },
+      newsDetail: {
+        breadcrumbNews: 'News',
+        emptyBodyMessage: 'No content yet.',
+      },
+      categoryListing: {
+        breadcrumbBusinesses: 'Businesses',
+        emptyMessage: 'No products in this category yet. Check back soon!',
+      },
+      notFound: {
+        code: '404',
+        title: 'Page not found',
+        body: "The page you're looking for doesn't exist or has been moved.",
+        ctaLabel: 'Go home',
+      },
+      loading: {
+        srLabel: 'Loading…',
+      },
+    },
+  })
+
+  // Inject categoryLabels into the news group as a follow-up update so
+  // it doesn't bloat the main block visually.
+  await payload.updateGlobal({
+    slug: 'page-content',
+    locale: 'en',
+    data: {
+      news: {
+        categoryLabels: [
+          { value: 'press',        label: 'Press Release' },
+          { value: 'event',        label: 'Event' },
+          { value: 'award',        label: 'Award' },
+          { value: 'exhibition',   label: 'Exhibition' },
+          { value: 'announcement', label: 'Announcement' },
+        ],
       },
     },
   })
   console.log('✓ Seeded page-content')
+
+  // ────────────────────────────────────────────────────────────────
+  // Forms
+  // ────────────────────────────────────────────────────────────────
+  await payload.updateGlobal({
+    slug: 'forms',
+    locale: 'en',
+    data: {
+      enquiry: {
+        nameLabel: 'Name *',
+        emailLabel: 'Email *',
+        phoneLabel: 'Phone',
+        companyLabel: 'Company',
+        countryLabel: 'Country',
+        countryDefault: 'India',
+        messageLabel: 'Message *',
+        messagePlaceholder: 'Tell us about your requirements...',
+        submitLabel: 'Submit Enquiry',
+        submittingLabel: 'Submitting...',
+        successTitle: 'Thank you!',
+        successBody: 'Your enquiry has been submitted. Our team will get back to you shortly.',
+      },
+      application: {
+        nameLabel: 'Full Name *',
+        emailLabel: 'Email *',
+        phoneLabel: 'Phone',
+        resumeLabel: 'Resume / CV *',
+        resumeHint: '(PDF, DOC · max 5 MB)',
+        coverLetterLabel: 'Cover Letter',
+        coverLetterPlaceholder: "Tell us why you'd be a great fit...",
+        submitLabel: 'Submit Application',
+        submittingLabel: 'Submitting...',
+        successTitle: 'Application submitted!',
+        successBodyTemplate: "Thank you for applying for {jobTitle}. We'll be in touch soon.",
+      },
+    },
+  })
+  console.log('✓ Seeded forms')
 
   console.log('\n🐶 All page content seeded successfully (en locale).')
   console.log('   Hindi / Telugu / Tamil translations: add via admin UI.\n')

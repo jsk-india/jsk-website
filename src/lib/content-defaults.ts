@@ -192,6 +192,138 @@ export const PAGE_DEFAULTS = {
     body: 'JSK Industries is committed to transparency and timely disclosure. Access our financial reports, governance documents, and regulatory filings below.',
     emptyMessage: 'Investor documents will be published here soon.',
   },
+
+  // ── Detail page templates (reused across all detail routes) ──
+  productDetail: {
+    galleryHeading: 'Gallery',
+    specificationsHeading: 'Specifications',
+    standardsHeading: 'Standards & Compliance',
+    applicationsHeading: 'Applications',
+    ctaTitle: 'Interested in this product?',
+    ctaBody: 'Get a quote or request technical details from our team.',
+    ctaButton: 'Enquire Now',
+    brochureButton: '📄 Download Brochure',
+    relatedHeading: 'Related Products',
+    breadcrumbBusinesses: 'Businesses',
+  },
+  verticalDetail: {
+    partnerEyebrow: 'Technology Partner',
+    visitPartnerLink: 'Visit partner website →',
+    ctaTitleTemplate: 'Interested in {name}?',
+    ctaBody: 'Get in touch with our team to discuss how this solution can benefit your operations.',
+    ctaButton: 'Contact Us',
+    breadcrumbBusinesses: 'Businesses',
+    breadcrumbNewVerticals: 'New Verticals',
+  },
+  careerDetail: {
+    responsibilitiesHeading: 'Responsibilities',
+    qualificationsHeading: 'Qualifications',
+    applyHeading: 'Apply Now',
+    summaryHeading: 'Job Summary',
+    departmentLabel: 'Department',
+    locationLabel: 'Location',
+    typeLabel: 'Type',
+    postedLabel: 'Posted',
+    breadcrumbCareers: 'Careers',
+  },
+  newsDetail: {
+    breadcrumbNews: 'News',
+    emptyBodyMessage: 'No content yet.',
+  },
+  categoryListing: {
+    breadcrumbBusinesses: 'Businesses',
+    emptyMessage: 'No products in this category yet. Check back soon!',
+  },
+  notFound: {
+    code: '404',
+    title: 'Page not found',
+    body: "The page you're looking for doesn't exist or has been moved.",
+    ctaLabel: 'Go home',
+  },
+  loading: {
+    srLabel: 'Loading…',
+  },
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Forms (Enquiry + Application)
+// ────────────────────────────────────────────────────────────────────
+
+export const FORM_DEFAULTS = {
+  enquiry: {
+    nameLabel: 'Name *',
+    emailLabel: 'Email *',
+    phoneLabel: 'Phone',
+    companyLabel: 'Company',
+    countryLabel: 'Country',
+    countryDefault: 'India',
+    messageLabel: 'Message *',
+    messagePlaceholder: 'Tell us about your requirements...',
+    submitLabel: 'Submit Enquiry',
+    submittingLabel: 'Submitting...',
+    successTitle: 'Thank you!',
+    successBody: 'Your enquiry has been submitted. Our team will get back to you shortly.',
+  },
+  application: {
+    nameLabel: 'Full Name *',
+    emailLabel: 'Email *',
+    phoneLabel: 'Phone',
+    resumeLabel: 'Resume / CV *',
+    resumeHint: '(PDF, DOC · max 5 MB)',
+    coverLetterLabel: 'Cover Letter',
+    coverLetterPlaceholder: "Tell us why you'd be a great fit...",
+    submitLabel: 'Submit Application',
+    submittingLabel: 'Submitting...',
+    successTitle: 'Application submitted!',
+    successBodyTemplate: "Thank you for applying for {jobTitle}. We'll be in touch soon.",
+  },
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Investor + News category labels
+// ────────────────────────────────────────────────────────────────────
+
+export const INVESTOR_CATEGORY_LABELS: Record<string, string> = {
+  annual_report: 'Annual Reports',
+  financial_result: 'Financial Results',
+  shareholding_pattern: 'Shareholding Pattern',
+  corporate_governance: 'Corporate Governance',
+  corporate_announcement: 'Corporate Announcements',
+  notice: 'Notices',
+  agm: 'Annual General Meeting',
+  postal_ballot: 'Postal Ballot',
+  annual_return: 'Annual Returns',
+  policy: 'Company Policies',
+  credit_rating: 'Credit Rating',
+  disclosure: 'Disclosures (LODR)',
+  secretarial_compliance: 'Secretarial Compliance',
+  iepf: 'IEPF',
+  committee_composition: 'Committee Composition',
+  investor_grievance: 'Investor Grievance',
+  corporate_presentation: 'Corporate Presentations',
+  other: 'Other',
+}
+
+export const NEWS_CATEGORY_LABELS: Record<string, string> = {
+  press: 'Press Release',
+  event: 'Event',
+  award: 'Award',
+  exhibition: 'Exhibition',
+  announcement: 'Announcement',
+}
+
+/** Build a label lookup that prefers CMS overrides, then falls back. */
+export function mergeCategoryLabels(
+  cmsLabels: { value?: string | null; label?: string | null }[] | null | undefined,
+  defaults: Record<string, string>,
+): Record<string, string> {
+  const merged = { ...defaults }
+  if (Array.isArray(cmsLabels)) {
+    for (const item of cmsLabels) {
+      if (item.value && item.label) merged[item.value] = item.label
+    }
+  }
+  return merged
 }
 
 // ────────────────────────────────────────────────────────────────────

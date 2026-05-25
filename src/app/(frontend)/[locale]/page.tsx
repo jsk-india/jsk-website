@@ -15,14 +15,15 @@ import {
   arrayOr,
 } from '@/lib/content-defaults'
 
+import { buildMetadata } from '@/lib/seo'
+
 interface Props { params: Promise<{ locale: string }> }
 
 export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: 'JSK Industries — Powering Growth',
-    description:
-      "India's trusted aluminium conductor manufacturer since 1965. ₹30 Billion company, exports to 30+ countries, LME-listed, NABL accredited.",
-  }
+  return buildMetadata(
+    'Powering Growth',
+    "India's trusted aluminium conductor manufacturer since 1965. ₹30 Billion company, exports to 30+ countries, LME-listed, NABL accredited.",
+  )
 }
 
 /** Fallback hero used when SiteSettings has no slides configured. */

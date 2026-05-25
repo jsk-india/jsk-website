@@ -3,12 +3,16 @@ import { getPayload } from '@/lib/payload'
 import { mediaUrl, mediaAlt } from '@/lib/media'
 import { RichText } from '@/components/RichText'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
+import { pageMetadata } from '@/lib/seo'
 import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'About Us' }
-
 interface Props { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  return pageMetadata(locale as Locale, 'about')
+}
 
 export default async function AboutPage({ params }: Props) {
   const { locale } = await params

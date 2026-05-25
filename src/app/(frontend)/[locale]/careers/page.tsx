@@ -1,12 +1,16 @@
 import Link from 'next/link'
 import { getPayload } from '@/lib/payload'
 import { PAGE_DEFAULTS, textOr, arrayOr } from '@/lib/content-defaults'
+import { pageMetadata } from '@/lib/seo'
 import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Careers' }
-
 interface Props { params: Promise<{ locale: string }> }
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  return pageMetadata(locale as Locale, 'careers')
+}
 
 export default async function CareersPage({ params }: Props) {
   const { locale } = await params
