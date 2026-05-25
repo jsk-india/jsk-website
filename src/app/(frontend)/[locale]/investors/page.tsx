@@ -1,5 +1,6 @@
 import { getPayload } from '@/lib/payload'
 import { isMedia } from '@/lib/media'
+import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
@@ -38,6 +39,7 @@ export default async function InvestorsPage({ params }: Props) {
   ])
 
   const inv = page.investors ?? {}
+  const d = PAGE_DEFAULTS.investors
 
   // Group by category
   const grouped: Record<string, typeof docs.docs> = {}
@@ -51,11 +53,11 @@ export default async function InvestorsPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-      {inv.headline && <h1 className="text-4xl font-extrabold uppercase tracking-tight">{inv.headline}</h1>}
-      {inv.body && <p className="mt-4 max-w-2xl text-lg text-ink-600">{inv.body}</p>}
+      <h1 className="text-4xl font-extrabold uppercase tracking-tight">{textOr(inv.headline, d.headline)}</h1>
+      <p className="mt-4 max-w-2xl text-lg text-ink-600">{textOr(inv.body, d.body)}</p>
 
       {docs.totalDocs === 0 ? (
-        inv.emptyMessage && <p className="mt-12 text-center text-ink-600">{inv.emptyMessage}</p>
+        <p className="mt-12 text-center text-ink-600">{textOr(inv.emptyMessage, d.emptyMessage)}</p>
       ) : (
         <div className="mt-12 space-y-6">
           {categoryOrder.filter((cat) => grouped[cat]).map((cat) => (

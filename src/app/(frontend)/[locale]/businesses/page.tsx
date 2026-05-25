@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getPayload } from '@/lib/payload'
+import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import type { Locale } from '@/lib/i18n'
 
 interface Props { params: Promise<{ locale: string }> }
@@ -15,11 +16,12 @@ export default async function BusinessesPage({ params }: Props) {
   ])
 
   const b = page.businesses ?? {}
+  const d = PAGE_DEFAULTS.businesses
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-      {b.headline && <h1 className="text-4xl font-extrabold uppercase tracking-tight">{b.headline}</h1>}
-      {b.body && <p className="mt-4 max-w-2xl text-lg text-ink-600">{b.body}</p>}
+      <h1 className="text-4xl font-extrabold uppercase tracking-tight">{textOr(b.headline, d.headline)}</h1>
+      <p className="mt-4 max-w-2xl text-lg text-ink-600">{textOr(b.body, d.body)}</p>
 
       <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {categories.docs.map((cat) => (
@@ -30,15 +32,11 @@ export default async function BusinessesPage({ params }: Props) {
           </Link>
         ))}
 
-        {(b.newVerticalsCardTitle || b.newVerticalsCardBody) && (
-          <Link href={`${prefix}/businesses/new-verticals`}
-            className="group rounded-lg border-2 border-brand-gold/40 bg-brand-gold-50/30 p-8 transition hover:border-brand-gold hover:shadow-lg">
-            {b.newVerticalsCardTitle && (
-              <h2 className="text-2xl font-bold group-hover:text-brand-red">{b.newVerticalsCardTitle}</h2>
-            )}
-            {b.newVerticalsCardBody && <p className="mt-3 text-ink-600">{b.newVerticalsCardBody}</p>}
-          </Link>
-        )}
+        <Link href={`${prefix}/businesses/new-verticals`}
+          className="group rounded-lg border-2 border-brand-gold/40 bg-brand-gold-50/30 p-8 transition hover:border-brand-gold hover:shadow-lg">
+          <h2 className="text-2xl font-bold group-hover:text-brand-red">{textOr(b.newVerticalsCardTitle, d.newVerticalsCardTitle)}</h2>
+          <p className="mt-3 text-ink-600">{textOr(b.newVerticalsCardBody, d.newVerticalsCardBody)}</p>
+        </Link>
       </div>
     </div>
   )

@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { getPayload } from '@/lib/payload'
 import { mediaUrl, mediaAlt } from '@/lib/media'
 import { RichText } from '@/components/RichText'
+import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
@@ -13,7 +14,6 @@ export default async function AboutPage({ params }: Props) {
   const { locale } = await params
   const payload = await getPayload()
 
-  // depth: 1 populates the photo upload field with the full media object
   const [persons, certs, plants, page] = await Promise.all([
     payload.find({ collection: 'persons', sort: 'order', limit: 20, depth: 1 }),
     payload.find({ collection: 'certifications', locale: locale as Locale, limit: 20 }),
@@ -24,25 +24,32 @@ export default async function AboutPage({ params }: Props) {
   const founder = persons.docs.find((p) => p.isFounder)
   const board = persons.docs.filter((p) => p.isBoard)
   const about = page.about ?? {}
+  const d = PAGE_DEFAULTS.about
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-      {about.headline && (
-        <h1 className="text-4xl font-extrabold uppercase tracking-tight">{about.headline}</h1>
-      )}
+      <h1 className="text-4xl font-extrabold uppercase tracking-tight">
+        {textOr(about.headline, d.headline)}
+      </h1>
 
-      {about.intro && (
-        <section className="mt-10 max-w-3xl text-ink-600 leading-relaxed">
+      <section className="mt-10 max-w-3xl text-ink-600 leading-relaxed">
+        {about.intro ? (
           <RichText data={about.intro} />
-        </section>
-      )}
+        ) : (
+          <div className="space-y-4">
+            {d.introParagraphs.map((p, i) => (
+              <p key={i} className={i === 0 ? 'text-lg' : ''}>{p}</p>
+            ))}
+          </div>
+        )}
+      </section>
 
       {/* Leadership */}
       {(founder || board.length > 0) && (
         <section className="mt-16">
-          {about.leadershipHeading && (
-            <h2 className="text-2xl font-bold uppercase tracking-wide">{about.leadershipHeading}</h2>
-          )}
+          <h2 className="text-2xl font-bold uppercase tracking-wide">
+            {textOr(about.leadershipHeading, d.leadershipHeading)}
+          </h2>
           <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {founder && (() => {
               const photo = mediaUrl(founder.photo, 'card') ?? mediaUrl(founder.photo)
@@ -87,9 +94,9 @@ export default async function AboutPage({ params }: Props) {
       {/* Manufacturing */}
       {plants.docs.length > 0 && (
         <section className="mt-16">
-          {about.manufacturingHeading && (
-            <h2 className="text-2xl font-bold uppercase tracking-wide">{about.manufacturingHeading}</h2>
-          )}
+          <h2 className="text-2xl font-bold uppercase tracking-wide">
+            {textOr(about.manufacturingHeading, d.manufacturingHeading)}
+          </h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
             {plants.docs.map((p) => (
               <div key={p.id} className="rounded-lg border border-surface-100 bg-white p-6 shadow-sm">
@@ -113,9 +120,9 @@ export default async function AboutPage({ params }: Props) {
       {/* Certifications */}
       {certs.docs.length > 0 && (
         <section className="mt-16">
-          {about.certificationsHeading && (
-            <h2 className="text-2xl font-bold uppercase tracking-wide">{about.certificationsHeading}</h2>
-          )}
+          <h2 className="text-2xl font-bold uppercase tracking-wide">
+            {textOr(about.certificationsHeading, d.certificationsHeading)}
+          </h2>
           <div className="mt-8 flex flex-wrap gap-4">
             {certs.docs.map((c) => (
               <div key={c.id} className="rounded-lg border border-brand-gold bg-brand-gold-50 px-6 py-4 text-center">

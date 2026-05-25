@@ -1,4 +1,5 @@
 import { getPayload } from '@/lib/payload'
+import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
@@ -16,11 +17,12 @@ export default async function ClientsPage({ params }: Props) {
   ])
 
   const c = page.clients ?? {}
+  const d = PAGE_DEFAULTS.clients
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-      {c.headline && <h1 className="text-4xl font-extrabold uppercase tracking-tight">{c.headline}</h1>}
-      {c.body && <p className="mt-4 max-w-2xl text-lg text-ink-600">{c.body}</p>}
+      <h1 className="text-4xl font-extrabold uppercase tracking-tight">{textOr(c.headline, d.headline)}</h1>
+      <p className="mt-4 max-w-2xl text-lg text-ink-600">{textOr(c.body, d.body)}</p>
 
       <div className="mt-12 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {clients.docs.map((client) => (
@@ -35,7 +37,7 @@ export default async function ClientsPage({ params }: Props) {
         ))}
       </div>
 
-      {c.footnote && <p className="mt-8 text-center text-xs text-ink-300">{c.footnote}</p>}
+      <p className="mt-8 text-center text-xs text-ink-300">{textOr(c.footnote, d.footnote)}</p>
     </div>
   )
 }

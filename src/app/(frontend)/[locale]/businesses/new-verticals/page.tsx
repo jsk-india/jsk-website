@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getPayload } from '@/lib/payload'
+import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import type { Locale } from '@/lib/i18n'
 
 interface Props { params: Promise<{ locale: string }> }
@@ -15,17 +16,19 @@ export default async function NewVerticalsPage({ params }: Props) {
   ])
 
   const nv = page.newVerticals ?? {}
+  const d = PAGE_DEFAULTS.newVerticals
+  const headline = textOr(nv.headline, d.headline)
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
       <nav className="mb-6 text-sm text-ink-600">
         <Link href={`${prefix}/businesses`} className="hover:text-brand-red">Businesses</Link>
         <span className="mx-2">›</span>
-        <span className="font-medium text-ink-900">{nv.headline ?? 'New Verticals'}</span>
+        <span className="font-medium text-ink-900">{headline}</span>
       </nav>
 
-      {nv.headline && <h1 className="text-4xl font-extrabold uppercase tracking-tight">{nv.headline}</h1>}
-      {nv.body && <p className="mt-4 max-w-2xl text-lg text-ink-600">{nv.body}</p>}
+      <h1 className="text-4xl font-extrabold uppercase tracking-tight">{headline}</h1>
+      <p className="mt-4 max-w-2xl text-lg text-ink-600">{textOr(nv.body, d.body)}</p>
 
       <div className="mt-12 grid gap-8 md:grid-cols-3">
         {verticals.docs.map((v) => (

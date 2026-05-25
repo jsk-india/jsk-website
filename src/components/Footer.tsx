@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { getPayload } from '@/lib/payload'
 import { isMedia } from '@/lib/media'
 import { localizeHref } from '@/lib/i18n'
+import { FOOTER_DEFAULTS, textOr, arrayOr } from '@/lib/content-defaults'
 import type { Locale } from '@/lib/i18n'
 
 interface Props { locale: Locale }
@@ -21,13 +22,13 @@ export async function Footer({ locale }: Props) {
     phone?: string | null; email?: string | null
   }[]
 
-  const columns = (footer.columns ?? []) as {
-    heading?: string | null
-    links?: { label?: string | null; href?: string | null }[] | null
-  }[]
+  const columns = arrayOr(
+    footer.columns as { heading?: string | null; links?: { label?: string | null; href?: string | null }[] | null }[] | null | undefined,
+    FOOTER_DEFAULTS.columns(prefix),
+  )
 
   const legalLinks = (footer.legalLinks ?? []) as { label?: string | null; href?: string | null }[]
-  const copyright = footer.copyrightText ?? ''
+  const copyright = textOr(footer.copyrightText, FOOTER_DEFAULTS.copyright(new Date().getFullYear()))
 
   // Get the primary (first) address for the footer
   const primary = addresses[0]
@@ -51,9 +52,10 @@ export async function Footer({ locale }: Props) {
                 <span className="text-lg font-extrabold text-brand-gold">jsk</span>
               )}
             </Link>
-            {settings.tagline && (
-              <p className="mt-1 text-sm text-ink-300">{settings.tagline as string}</p>
-            )}
+            <p className="mt-1 text-sm text-ink-300">
+              {textOr(settings.tagline as string | null | undefined, FOOTER_DEFAULTS.tagline)}
+            </p>
+            <p className="mt-2 text-xs text-ink-300">{FOOTER_DEFAULTS.foundedStrip}</p>
             {primary && (
               <address className="mt-4 text-xs not-italic text-ink-300 space-y-1">
                 {primary.phone && (

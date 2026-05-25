@@ -1,4 +1,5 @@
 import { getPayload } from '@/lib/payload'
+import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
@@ -19,20 +20,19 @@ export default async function StoriesPage({ params }: Props) {
   ])
 
   const s = page.stories ?? {}
+  const d = PAGE_DEFAULTS.stories
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-      {s.headline && <h1 className="text-4xl font-extrabold uppercase tracking-tight">{s.headline}</h1>}
-      {s.body && <p className="mt-4 text-lg text-ink-600">{s.body}</p>}
+      <h1 className="text-4xl font-extrabold uppercase tracking-tight">{textOr(s.headline, d.headline)}</h1>
+      <p className="mt-4 text-lg text-ink-600">{textOr(s.body, d.body)}</p>
 
       {stories.totalDocs === 0 ? (
-        (s.emptyTitle || s.emptyBody) && (
-          <div className="mt-16 rounded-lg border-2 border-dashed border-surface-100 py-20 text-center">
-            <p className="text-3xl">📖</p>
-            {s.emptyTitle && <h2 className="mt-4 text-xl font-bold">{s.emptyTitle}</h2>}
-            {s.emptyBody && <p className="mt-2 text-ink-600">{s.emptyBody}</p>}
-          </div>
-        )
+        <div className="mt-16 rounded-lg border-2 border-dashed border-surface-100 py-20 text-center">
+          <p className="text-3xl">📖</p>
+          <h2 className="mt-4 text-xl font-bold">{textOr(s.emptyTitle, d.emptyTitle)}</h2>
+          <p className="mt-2 text-ink-600">{textOr(s.emptyBody, d.emptyBody)}</p>
+        </div>
       ) : (
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {stories.docs.map((story) => (

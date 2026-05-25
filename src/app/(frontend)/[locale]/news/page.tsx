@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getPayload } from '@/lib/payload'
 import { mediaUrl, mediaAlt } from '@/lib/media'
+import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
@@ -16,6 +17,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 export default async function NewsPage({ params }: Props) {
   const { locale } = await params
+  const prefix = `/${locale}`
   const payload = await getPayload()
 
   const [articles, page] = await Promise.all([
@@ -27,25 +29,23 @@ export default async function NewsPage({ params }: Props) {
   ])
 
   const n = page.news ?? {}
+  const d = PAGE_DEFAULTS.news
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-      {n.headline && <h1 className="text-4xl font-extrabold uppercase tracking-tight">{n.headline}</h1>}
-      {n.body && <p className="mt-4 text-lg text-ink-600">{n.body}</p>}
+      <h1 className="text-4xl font-extrabold uppercase tracking-tight">{textOr(n.headline, d.headline)}</h1>
+      <p className="mt-4 text-lg text-ink-600">{textOr(n.body, d.body)}</p>
 
       {articles.totalDocs === 0 ? (
-        (n.emptyTitle || n.emptyBody) && (
-          <div className="mt-16 rounded-lg border-2 border-dashed border-surface-100 py-20 text-center">
-            <p className="text-3xl">📰</p>
-            {n.emptyTitle && <h2 className="mt-4 text-xl font-bold">{n.emptyTitle}</h2>}
-            {n.emptyBody && <p className="mt-2 text-ink-600">{n.emptyBody}</p>}
-          </div>
-        )
+        <div className="mt-16 rounded-lg border-2 border-dashed border-surface-100 py-20 text-center">
+          <p className="text-3xl">📰</p>
+          <h2 className="mt-4 text-xl font-bold">{textOr(n.emptyTitle, d.emptyTitle)}</h2>
+          <p className="mt-2 text-ink-600">{textOr(n.emptyBody, d.emptyBody)}</p>
+        </div>
       ) : (
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {articles.docs.map((a) => {
             const cover = mediaUrl(a.cover, 'card') ?? mediaUrl(a.cover)
-            const prefix = `/${locale}`
             return (
               <Link key={a.id} href={`${prefix}/news/${a.slug}`}
                 className="group overflow-hidden rounded-lg border border-surface-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
