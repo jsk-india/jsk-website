@@ -12,60 +12,65 @@ export default async function CareersPage({ params }: Props) {
   const prefix = `/${locale}`
   const payload = await getPayload()
 
-  const jobs = await payload.find({
-    collection: 'job-openings',
-    locale: locale as Locale,
-    sort: '-postedAt',
-    limit: 50,
-    where: { isActive: { equals: true }, _status: { equals: 'published' } },
-  })
+  const [jobs, page] = await Promise.all([
+    payload.find({
+      collection: 'job-openings', locale: locale as Locale, sort: '-postedAt', limit: 50,
+      where: { isActive: { equals: true }, _status: { equals: 'published' } },
+    }),
+    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+  ])
+
+  const c = page.careers ?? {}
+  const whyItems = (c.whyItems ?? []) as { icon?: string | null; title?: string | null; body?: string | null }[]
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
       {/* Hero */}
-      <div className="rounded-lg bg-ink-900 px-8 py-12 text-white">
-        <h1 className="text-4xl font-extrabold">Join JSK Industries</h1>
-        <p className="mt-4 max-w-2xl text-lg text-surface-100/80">
-          Be part of a company that has powered India&apos;s transmission infrastructure for over five
-          decades. We&apos;re always looking for talented engineers, technicians, and professionals.
-        </p>
-      </div>
-
-      {/* Why JSK */}
-      <section className="mt-16">
-        <h2 className="text-2xl font-bold uppercase tracking-wide">Why JSK</h2>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { icon: '🏭', title: 'State-of-art Facility', desc: '35,000 sq.m plant with modern equipment.' },
-            { icon: '📈', title: 'Growth Oriented', desc: 'Continuous training and career development.' },
-            { icon: '🌍', title: 'Industry Leaders', desc: 'Work with India\'s biggest power companies.' },
-            { icon: '🔬', title: 'Innovation First', desc: 'New verticals in photonics, digital substations & cybersecurity.' },
-          ].map((s) => (
-            <div key={s.title} className="rounded-lg border border-surface-100 p-5">
-              <span className="text-2xl">{s.icon}</span>
-              <h3 className="mt-3 font-bold">{s.title}</h3>
-              <p className="mt-1 text-sm text-ink-600">{s.desc}</p>
-            </div>
-          ))}
+      {(c.heroTitle || c.heroBody) && (
+        <div className="rounded-lg bg-ink-900 px-8 py-12 text-white">
+          {c.heroTitle && <h1 className="text-4xl font-extrabold">{c.heroTitle}</h1>}
+          {c.heroBody && <p className="mt-4 max-w-2xl text-lg text-surface-100/80">{c.heroBody}</p>}
         </div>
-      </section>
+      )}
+
+      {/* Why JSK (employer-side) */}
+      {whyItems.length > 0 && (
+        <section className="mt-16">
+          {c.whyHeading && (
+            <h2 className="text-2xl font-bold uppercase tracking-wide">{c.whyHeading}</h2>
+          )}
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {whyItems.map((s, i) => (
+              <div key={i} className="rounded-lg border border-surface-100 p-5">
+                {s.icon && <span className="text-2xl">{s.icon}</span>}
+                {s.title && <h3 className="mt-3 font-bold">{s.title}</h3>}
+                {s.body && <p className="mt-1 text-sm text-ink-600">{s.body}</p>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Open positions */}
       <section className="mt-16">
-        <h2 className="text-2xl font-bold uppercase tracking-wide">Open Positions</h2>
+        {c.openPositionsHeading && (
+          <h2 className="text-2xl font-bold uppercase tracking-wide">{c.openPositionsHeading}</h2>
+        )}
 
         {jobs.totalDocs === 0 ? (
-          <div className="mt-8 rounded-lg border-2 border-dashed border-surface-100 py-16 text-center">
-            <p className="text-3xl">👀</p>
-            <h3 className="mt-4 text-xl font-bold">No open positions right now</h3>
-            <p className="mt-2 text-ink-600">
-              We&apos;re not actively hiring, but we&apos;re always interested in great talent.
-            </p>
-            <a href={`${prefix}/enquiry`}
-              className="mt-4 inline-block rounded-md bg-brand-red px-6 py-3 text-sm font-semibold text-white hover:bg-brand-red-dark">
-              Send us your resume
-            </a>
-          </div>
+          (c.emptyTitle || c.emptyBody || c.emptyCtaLabel) && (
+            <div className="mt-8 rounded-lg border-2 border-dashed border-surface-100 py-16 text-center">
+              <p className="text-3xl">👀</p>
+              {c.emptyTitle && <h3 className="mt-4 text-xl font-bold">{c.emptyTitle}</h3>}
+              {c.emptyBody && <p className="mt-2 text-ink-600">{c.emptyBody}</p>}
+              {c.emptyCtaLabel && (
+                <a href={`${prefix}/enquiry`}
+                  className="mt-4 inline-block rounded-md bg-brand-red px-6 py-3 text-sm font-semibold text-white hover:bg-brand-red-dark">
+                  {c.emptyCtaLabel}
+                </a>
+              )}
+            </div>
+          )
         ) : (
           <div className="mt-6 space-y-4">
             {jobs.docs.map((job) => (

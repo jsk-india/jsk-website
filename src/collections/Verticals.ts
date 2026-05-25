@@ -12,6 +12,12 @@ export const Verticals: CollectionConfig = {
     { name: 'name', type: 'text', required: true, localized: true },
     { name: 'slug', type: 'text', required: true, unique: true, admin: { position: 'sidebar' } },
     { name: 'heroImage', type: 'upload', relationTo: 'media' },
+    {
+      name: 'cardImage',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { description: 'Thumbnail shown on the homepage "New Verticals" grid. Falls back to heroImage if empty.' },
+    },
     { name: 'summary', type: 'textarea', localized: true },
     { name: 'body', type: 'richText', localized: true },
     {

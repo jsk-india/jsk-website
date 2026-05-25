@@ -128,11 +128,17 @@ export interface Config {
     'site-settings': SiteSetting;
     navigation: Navigation;
     footer: Footer;
+    'home-content': HomeContent;
+    strengths: Strength;
+    'page-content': PageContent;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'home-content': HomeContentSelect<false> | HomeContentSelect<true>;
+    strengths: StrengthsSelect<false> | StrengthsSelect<true>;
+    'page-content': PageContentSelect<false> | PageContentSelect<true>;
   };
   locale: 'en' | 'hi' | 'te' | 'ta';
   widgets: {
@@ -346,6 +352,10 @@ export interface Product {
       }[]
     | null;
   /**
+   * Square-ish thumbnail shown on the homepage product grid. Falls back to constructionImage if empty.
+   */
+  cardImage?: (number | null) | Media;
+  /**
    * Cross-section / construction diagram.
    */
   constructionImage?: (number | null) | Media;
@@ -375,6 +385,10 @@ export interface Vertical {
   name: string;
   slug: string;
   heroImage?: (number | null) | Media;
+  /**
+   * Thumbnail shown on the homepage "New Verticals" grid. Falls back to heroImage if empty.
+   */
+  cardImage?: (number | null) | Media;
   summary?: string | null;
   body?: {
     root: {
@@ -1041,6 +1055,7 @@ export interface ProductsSelect<T extends boolean = true> {
         value?: T;
         id?: T;
       };
+  cardImage?: T;
   constructionImage?: T;
   galleryImages?:
     | T
@@ -1069,6 +1084,7 @@ export interface VerticalsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   heroImage?: T;
+  cardImage?: T;
   summary?: T;
   body?: T;
   partner?:
@@ -1538,6 +1554,242 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-content".
+ */
+export interface HomeContent {
+  id: number;
+  manifesto?: {
+    /**
+     * First chunk of the headline. Renders before the highlighted part.
+     */
+    headlinePart1?: string | null;
+    /**
+     * Highlighted middle chunk (rendered in brand-red).
+     */
+    headlineHighlight?: string | null;
+    /**
+     * Final chunk of the headline, rendered after the highlight.
+     */
+    headlinePart3?: string | null;
+    body?: string | null;
+    /**
+     * Label for the brochure download button. Hidden when SiteSettings.brochure is empty.
+     */
+    brochureButtonLabel?: string | null;
+  };
+  vision?: {
+    /**
+     * e.g. "Our Vision"
+     */
+    eyebrow?: string | null;
+    headline?: string | null;
+    body?: string | null;
+  };
+  mission?: {
+    /**
+     * e.g. "Our Mission"
+     */
+    eyebrow?: string | null;
+    headline?: string | null;
+    body?: string | null;
+  };
+  certifications?: {
+    heading?: string | null;
+    items?:
+      | {
+          label: string;
+          /**
+           * Short caption under the label.
+           */
+          hint?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    footnote?: string | null;
+  };
+  enquiryCta?: {
+    headline?: string | null;
+    body?: string | null;
+    buttonLabel?: string | null;
+  };
+  /**
+   * Small labels sprinkled between sections.
+   */
+  sectionHeadings?: {
+    /**
+     * Default: "Our Products"
+     */
+    productsHeading?: string | null;
+    /**
+     * Default: "View all products →"
+     */
+    viewAllProductsLink?: string | null;
+    /**
+     * Default: "New Verticals"
+     */
+    verticalsHeading?: string | null;
+    /**
+     * Default: "Trusted by India's leading companies"
+     */
+    clientsHeading?: string | null;
+    /**
+     * Default: "View all clients →"
+     */
+    viewAllClientsLink?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "strengths".
+ */
+export interface Strength {
+  id: number;
+  /**
+   * Section heading, e.g. "Why JSK".
+   */
+  heading?: string | null;
+  /**
+   * Recommended: 4 or 8 items (grid is 1/2/4 cols responsive).
+   */
+  items?:
+    | {
+        /**
+         * Single emoji, e.g. "🏭".
+         */
+        icon: string;
+        title: string;
+        body: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-content".
+ */
+export interface PageContent {
+  id: number;
+  about?: {
+    headline?: string | null;
+    /**
+     * Multi-paragraph intro shown under the H1.
+     */
+    intro?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    leadershipHeading?: string | null;
+    manufacturingHeading?: string | null;
+    certificationsHeading?: string | null;
+  };
+  businesses?: {
+    headline?: string | null;
+    body?: string | null;
+    /**
+     * Title on the special "New Verticals" card.
+     */
+    newVerticalsCardTitle?: string | null;
+    newVerticalsCardBody?: string | null;
+  };
+  newVerticals?: {
+    headline?: string | null;
+    body?: string | null;
+  };
+  clients?: {
+    headline?: string | null;
+    body?: string | null;
+    /**
+     * e.g. trademark disclaimer.
+     */
+    footnote?: string | null;
+  };
+  news?: {
+    headline?: string | null;
+    body?: string | null;
+    /**
+     * Shown when there are no published articles.
+     */
+    emptyTitle?: string | null;
+    emptyBody?: string | null;
+  };
+  stories?: {
+    headline?: string | null;
+    body?: string | null;
+    emptyTitle?: string | null;
+    emptyBody?: string | null;
+  };
+  careers?: {
+    heroTitle?: string | null;
+    heroBody?: string | null;
+    /**
+     * Heading above the employer-value-props grid.
+     */
+    whyHeading?: string | null;
+    /**
+     * Why join JSK as an employee. Recommended: 4 items.
+     */
+    whyItems?:
+      | {
+          icon: string;
+          title: string;
+          body: string;
+          id?: string | null;
+        }[]
+      | null;
+    openPositionsHeading?: string | null;
+    /**
+     * Shown when no positions are open.
+     */
+    emptyTitle?: string | null;
+    emptyBody?: string | null;
+    emptyCtaLabel?: string | null;
+  };
+  contact?: {
+    headline?: string | null;
+    body?: string | null;
+    /**
+     * Bottom red banner — title.
+     */
+    enquiryCtaTitle?: string | null;
+    enquiryCtaBody?: string | null;
+    enquiryCtaButton?: string | null;
+  };
+  enquiry?: {
+    headline?: string | null;
+    body?: string | null;
+    /**
+     * Prefix shown when ?product=... is in the URL, e.g. "Enquiring about:".
+     */
+    productLabel?: string | null;
+  };
+  investors?: {
+    headline?: string | null;
+    body?: string | null;
+    /**
+     * Shown when no documents are published.
+     */
+    emptyMessage?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -1662,6 +1914,182 @@ export interface FooterSelect<T extends boolean = true> {
         label?: T;
         href?: T;
         id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-content_select".
+ */
+export interface HomeContentSelect<T extends boolean = true> {
+  manifesto?:
+    | T
+    | {
+        headlinePart1?: T;
+        headlineHighlight?: T;
+        headlinePart3?: T;
+        body?: T;
+        brochureButtonLabel?: T;
+      };
+  vision?:
+    | T
+    | {
+        eyebrow?: T;
+        headline?: T;
+        body?: T;
+      };
+  mission?:
+    | T
+    | {
+        eyebrow?: T;
+        headline?: T;
+        body?: T;
+      };
+  certifications?:
+    | T
+    | {
+        heading?: T;
+        items?:
+          | T
+          | {
+              label?: T;
+              hint?: T;
+              id?: T;
+            };
+        footnote?: T;
+      };
+  enquiryCta?:
+    | T
+    | {
+        headline?: T;
+        body?: T;
+        buttonLabel?: T;
+      };
+  sectionHeadings?:
+    | T
+    | {
+        productsHeading?: T;
+        viewAllProductsLink?: T;
+        verticalsHeading?: T;
+        clientsHeading?: T;
+        viewAllClientsLink?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "strengths_select".
+ */
+export interface StrengthsSelect<T extends boolean = true> {
+  heading?: T;
+  items?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-content_select".
+ */
+export interface PageContentSelect<T extends boolean = true> {
+  about?:
+    | T
+    | {
+        headline?: T;
+        intro?: T;
+        leadershipHeading?: T;
+        manufacturingHeading?: T;
+        certificationsHeading?: T;
+      };
+  businesses?:
+    | T
+    | {
+        headline?: T;
+        body?: T;
+        newVerticalsCardTitle?: T;
+        newVerticalsCardBody?: T;
+      };
+  newVerticals?:
+    | T
+    | {
+        headline?: T;
+        body?: T;
+      };
+  clients?:
+    | T
+    | {
+        headline?: T;
+        body?: T;
+        footnote?: T;
+      };
+  news?:
+    | T
+    | {
+        headline?: T;
+        body?: T;
+        emptyTitle?: T;
+        emptyBody?: T;
+      };
+  stories?:
+    | T
+    | {
+        headline?: T;
+        body?: T;
+        emptyTitle?: T;
+        emptyBody?: T;
+      };
+  careers?:
+    | T
+    | {
+        heroTitle?: T;
+        heroBody?: T;
+        whyHeading?: T;
+        whyItems?:
+          | T
+          | {
+              icon?: T;
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+        openPositionsHeading?: T;
+        emptyTitle?: T;
+        emptyBody?: T;
+        emptyCtaLabel?: T;
+      };
+  contact?:
+    | T
+    | {
+        headline?: T;
+        body?: T;
+        enquiryCtaTitle?: T;
+        enquiryCtaBody?: T;
+        enquiryCtaButton?: T;
+      };
+  enquiry?:
+    | T
+    | {
+        headline?: T;
+        body?: T;
+        productLabel?: T;
+      };
+  investors?:
+    | T
+    | {
+        headline?: T;
+        body?: T;
+        emptyMessage?: T;
       };
   updatedAt?: T;
   createdAt?: T;

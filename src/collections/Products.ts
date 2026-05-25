@@ -85,6 +85,12 @@ export const Products: CollectionConfig = {
 
     // ── Media ──
     {
+      name: 'cardImage',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { description: 'Square-ish thumbnail shown on the homepage product grid. Falls back to constructionImage if empty.' },
+    },
+    {
       name: 'constructionImage',
       type: 'upload',
       relationTo: 'media',

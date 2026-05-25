@@ -30,6 +30,9 @@ import { ContactMessages } from '@/collections/ContactMessages'
 import { SiteSettings } from '@/globals/SiteSettings'
 import { Navigation } from '@/globals/Navigation'
 import { Footer } from '@/globals/Footer'
+import { HomeContent } from '@/globals/HomeContent'
+import { Strengths } from '@/globals/Strengths'
+import { PageContent } from '@/globals/PageContent'
 
 import { locales, defaultLocale } from '@/lib/i18n'
 
@@ -85,7 +88,7 @@ export default buildConfig({
     ContactMessages,
   ],
 
-  globals: [SiteSettings, Navigation, Footer],
+  globals: [SiteSettings, Navigation, Footer, HomeContent, Strengths, PageContent],
 
   plugins: [
     s3Storage({

@@ -27,7 +27,7 @@ export async function Footer({ locale }: Props) {
   }[]
 
   const legalLinks = (footer.legalLinks ?? []) as { label?: string | null; href?: string | null }[]
-  const copyright = footer.copyrightText ?? `© ${new Date().getFullYear()} JSK Industries Pvt. Ltd. All rights reserved.`
+  const copyright = footer.copyrightText ?? ''
 
   // Get the primary (first) address for the footer
   const primary = addresses[0]
@@ -51,10 +51,9 @@ export async function Footer({ locale }: Props) {
                 <span className="text-lg font-extrabold text-brand-gold">jsk</span>
               )}
             </Link>
-            <p className="mt-1 text-sm text-ink-300">
-              {(settings.tagline as string | null | undefined) ?? 'Powering Growth'}
-            </p>
-            <p className="mt-2 text-xs text-ink-300">Founded 1965 · Silvassa, India</p>
+            {settings.tagline && (
+              <p className="mt-1 text-sm text-ink-300">{settings.tagline as string}</p>
+            )}
             {primary && (
               <address className="mt-4 text-xs not-italic text-ink-300 space-y-1">
                 {primary.phone && (
@@ -67,41 +66,21 @@ export async function Footer({ locale }: Props) {
             )}
           </div>
 
-          {/* CMS-driven columns (if configured) */}
-          {columns.length > 0 ? (
-            columns.map((col, i) => (
-              <div key={i}>
+          {/* CMS-driven columns */}
+          {columns.map((col, i) => (
+            <div key={i}>
+              {col.heading && (
                 <h4 className="mb-3 text-sm font-semibold text-surface-100">{col.heading}</h4>
-                <ul className="space-y-2 text-sm text-ink-300">
-                  {(col.links ?? []).map((l, j) => (
-                    <li key={j}>
-                      <Link href={localizeHref(l.href, prefix)} className="hover:text-white">{l.label}</Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          ) : (
-            /* Hardcoded fallback */
-            <>
-              <div>
-                <h4 className="mb-3 text-sm font-semibold text-surface-100">Company</h4>
-                <ul className="space-y-2 text-sm text-ink-300">
-                  {[['About Us', `${prefix}/about`], ['Businesses', `${prefix}/businesses`], ['Manufacturing', `${prefix}/about#manufacturing`], ['Clients', `${prefix}/clients`]].map(([l, h]) => (
-                    <li key={l}><Link href={h} className="hover:text-white">{l}</Link></li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h4 className="mb-3 text-sm font-semibold text-surface-100">Resources</h4>
-                <ul className="space-y-2 text-sm text-ink-300">
-                  {[['Investors', `${prefix}/investors`], ['News', `${prefix}/news`], ['Careers', `${prefix}/careers`], ['Contact', `${prefix}/contact`]].map(([l, h]) => (
-                    <li key={l}><Link href={h} className="hover:text-white">{l}</Link></li>
-                  ))}
-                </ul>
-              </div>
-            </>
-          )}
+              )}
+              <ul className="space-y-2 text-sm text-ink-300">
+                {(col.links ?? []).map((l, j) => (
+                  <li key={j}>
+                    <Link href={localizeHref(l.href, prefix)} className="hover:text-white">{l.label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
 

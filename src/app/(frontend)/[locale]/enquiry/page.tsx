@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { getPayload } from '@/lib/payload'
+import type { Locale } from '@/lib/i18n'
 import { EnquiryForm } from './EnquiryForm'
 
 export const metadata: Metadata = { title: 'Enquiry' }
@@ -13,17 +15,23 @@ export default async function EnquiryPage({ params, searchParams }: Props) {
   const sp = await searchParams
   const product = typeof sp.product === 'string' ? sp.product : undefined
 
+  const payload = await getPayload()
+  const page = await payload.findGlobal({ slug: 'page-content', locale: locale as Locale })
+  const e = page.enquiry ?? {}
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-      <h1 className="text-4xl font-extrabold uppercase tracking-tight">Enquiry</h1>
-      <p className="mt-4 text-lg text-ink-600">
-        Fill out the form below and our team will get back to you within 24 hours.
-        {product && (
-          <span className="mt-1 block text-sm text-brand-red">
-            Enquiring about: <strong>{product.toUpperCase()}</strong>
-          </span>
-        )}
-      </p>
+      {e.headline && <h1 className="text-4xl font-extrabold uppercase tracking-tight">{e.headline}</h1>}
+      {(e.body || product) && (
+        <p className="mt-4 text-lg text-ink-600">
+          {e.body}
+          {product && e.productLabel && (
+            <span className="mt-1 block text-sm text-brand-red">
+              {e.productLabel} <strong>{product.toUpperCase()}</strong>
+            </span>
+          )}
+        </p>
+      )}
       <div className="mt-10">
         <EnquiryForm source={product ? `/businesses/${product}` : `/${locale}/enquiry`} />
       </div>

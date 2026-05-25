@@ -1,5 +1,6 @@
 import { getPayload } from '@/lib/payload'
 import { isMedia } from '@/lib/media'
+import type { Locale } from '@/lib/i18n'
 import type { Metadata } from 'next'
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -31,15 +32,12 @@ export default async function InvestorsPage({ params }: Props) {
   const { locale } = await params
   const payload = await getPayload()
 
-  // We need depth >= 1 so the `file` upload field is populated with url/mimeType.
-  // The `locale` arg is included for future-proofing localized titles.
-  void locale
-  const docs = await payload.find({
-    collection: 'investor-documents',
-    sort: '-publishedAt',
-    depth: 1,
-    limit: 200,
-  })
+  const [docs, page] = await Promise.all([
+    payload.find({ collection: 'investor-documents', locale: locale as Locale, sort: '-publishedAt', depth: 1, limit: 200 }),
+    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+  ])
+
+  const inv = page.investors ?? {}
 
   // Group by category
   const grouped: Record<string, typeof docs.docs> = {}
@@ -53,16 +51,11 @@ export default async function InvestorsPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-      <h1 className="text-4xl font-extrabold uppercase tracking-tight">Investor Relations</h1>
-      <p className="mt-4 max-w-2xl text-lg text-ink-600">
-        JSK Industries is committed to transparency and timely disclosure.
-        Access our financial reports, governance documents, and regulatory filings below.
-      </p>
+      {inv.headline && <h1 className="text-4xl font-extrabold uppercase tracking-tight">{inv.headline}</h1>}
+      {inv.body && <p className="mt-4 max-w-2xl text-lg text-ink-600">{inv.body}</p>}
 
       {docs.totalDocs === 0 ? (
-        <p className="mt-12 text-center text-ink-600">
-          Investor documents will be published here soon.
-        </p>
+        inv.emptyMessage && <p className="mt-12 text-center text-ink-600">{inv.emptyMessage}</p>
       ) : (
         <div className="mt-12 space-y-6">
           {categoryOrder.filter((cat) => grouped[cat]).map((cat) => (
@@ -80,17 +73,9 @@ export default async function InvestorsPage({ params }: Props) {
                         <td className="py-3 pr-4 text-ink-600">{doc.fy || ''}</td>
                         <td className="py-3 text-right">
                           {isMedia(doc.file) && doc.file.url ? (
-                            <a
-                              href={doc.file.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="font-semibold text-brand-red hover:underline"
-                            >
-                              📄 Download
-                            </a>
+                            <a href={doc.file.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-red hover:underline">📄 Download</a>
                           ) : doc.externalUrl ? (
-                            <a href={doc.externalUrl} target="_blank" rel="noopener noreferrer"
-                              className="text-brand-red hover:underline">View →</a>
+                            <a href={doc.externalUrl} target="_blank" rel="noopener noreferrer" className="text-brand-red hover:underline">View →</a>
                           ) : (
                             <span className="text-ink-300">Coming soon</span>
                           )}
