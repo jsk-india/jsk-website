@@ -111,12 +111,22 @@ export function MobileNav({ locale, prefix, items, ctaLabel, ctaHref, brochureUr
             {items.map((item, i) => {
               const hasChildren = !!item.children && item.children.length > 0
               const isExpanded = expandedIdx === i
+              const fullHref = localizeHref(item.href, prefix)
+              const isHome = item.href === '/' || item.href === '' || fullHref === prefix
+              const isActive = isHome
+                ? pathname === prefix || pathname === `${prefix}/`
+                : pathname === fullHref || pathname.startsWith(`${fullHref}/`)
               return (
                 <li key={i}>
                   <div className="flex items-stretch">
                     <Link
-                      href={localizeHref(item.href, prefix)}
-                      className="flex-1 rounded-md px-3 py-3 text-base font-medium text-ink-900 hover:bg-surface-50 hover:text-brand-red"
+                      href={fullHref}
+                      aria-current={isActive ? 'page' : undefined}
+                      className={`flex-1 rounded-md px-3 py-3 text-base font-medium hover:bg-surface-50 hover:text-brand-red ${
+                        isActive
+                          ? 'border-l-4 border-brand-red bg-brand-red/5 pl-2 text-brand-red'
+                          : 'text-ink-900'
+                      }`}
                     >
                       {item.label}
                     </Link>

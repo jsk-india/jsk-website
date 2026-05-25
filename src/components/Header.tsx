@@ -6,6 +6,7 @@ import { isMedia } from '@/lib/media'
 import { resolveLanguages } from '@/lib/languages'
 import { LocaleSwitcher } from './LocaleSwitcher'
 import { MobileNav, type MobileNavItem } from './MobileNav'
+import { NavLink } from './NavLink'
 import type { Locale } from '@/lib/i18n'
 
 interface Props { locale: Locale }
@@ -80,38 +81,26 @@ export async function Header({ locale }: Props) {
             )}
           </Link>
 
-          {/* Nav — from CMS, fallback to defaults */}
+          {/* Nav — from CMS, fallback to defaults. Active item is
+              highlighted via <NavLink> (reads usePathname). */}
           <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-            {navItems.length > 0 ? (
-              navItems.map((item, i) => (
-                <div key={i} className="relative group">
-                  <Link href={localizeHref(item.href, prefix)} className="hover:text-brand-red">
-                    {item.label}
-                  </Link>
-                  {item.children && item.children.length > 0 && (
-                    <div className="absolute left-0 top-full hidden min-w-40 rounded-md border border-surface-100 bg-white shadow-lg group-hover:block">
-                      {item.children.map((c, j) => (
-                        <Link key={j} href={localizeHref(c.href, prefix)}
-                          className="block px-4 py-2 text-sm hover:bg-surface-50 hover:text-brand-red">
-                          {c.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              /* Hardcoded fallback until CMS is configured */
-              <>
-                <Link href={`${prefix}/about`} className="hover:text-brand-red">About</Link>
-                <Link href={`${prefix}/businesses`} className="hover:text-brand-red">Businesses</Link>
-                <Link href={`${prefix}/clients`} className="hover:text-brand-red">Clients</Link>
-                <Link href={`${prefix}/investors`} className="hover:text-brand-red">Investors</Link>
-                <Link href={`${prefix}/news`} className="hover:text-brand-red">News</Link>
-                <Link href={`${prefix}/careers`} className="hover:text-brand-red">Careers</Link>
-                <Link href={`${prefix}/contact`} className="hover:text-brand-red">Contact</Link>
-              </>
-            )}
+            {(navItems.length > 0 ? navItems : FALLBACK_NAV).map((item, i) => (
+              <div key={i} className="relative group">
+                <NavLink href={item.href ?? '#'} prefix={prefix}>
+                  {item.label}
+                </NavLink>
+                {'children' in item && item.children && item.children.length > 0 && (
+                  <div className="absolute left-0 top-full hidden min-w-40 rounded-md border border-surface-100 bg-white shadow-lg group-hover:block">
+                    {item.children.map((c, j) => (
+                      <Link key={j} href={localizeHref(c.href, prefix)}
+                        className="block px-4 py-2 text-sm hover:bg-surface-50 hover:text-brand-red">
+                        {c.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
           </nav>
 
           {/* Right side */}
