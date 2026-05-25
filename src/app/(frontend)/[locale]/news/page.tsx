@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { mediaUrl, mediaAlt } from '@/lib/media'
 import { PAGE_DEFAULTS, textOr, mergeCategoryLabels, NEWS_CATEGORY_LABELS } from '@/lib/content-defaults'
 import { pageMetadata } from '@/lib/seo'
@@ -24,7 +24,7 @@ export default async function NewsPage({ params }: Props) {
       collection: 'news-articles', locale: locale as Locale, sort: '-publishedAt', limit: 20, depth: 1,
       where: { _status: { equals: 'published' } },
     }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
   ])
 
   const n = page.news ?? {}

@@ -1,4 +1,4 @@
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { isMedia } from '@/lib/media'
 import { PAGE_DEFAULTS, textOr, mergeCategoryLabels, INVESTOR_CATEGORY_LABELS } from '@/lib/content-defaults'
 import { pageMetadata } from '@/lib/seo'
@@ -18,7 +18,7 @@ export default async function InvestorsPage({ params }: Props) {
 
   const [docs, page] = await Promise.all([
     payload.find({ collection: 'investor-documents', locale: locale as Locale, sort: '-publishedAt', depth: 1, limit: 200 }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
   ])
 
   const inv = page.investors ?? {}

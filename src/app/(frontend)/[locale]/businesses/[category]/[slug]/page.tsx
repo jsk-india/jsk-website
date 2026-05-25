@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { isMedia, mediaUrl, mediaAlt } from '@/lib/media'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import { buildMetadata } from '@/lib/seo'
@@ -36,7 +36,7 @@ export default async function ProductDetailPage({ params }: Props) {
       depth: 2,
       limit: 1,
     }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
   ])
   const product = res.docs[0]
   if (!product) notFound()

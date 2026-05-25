@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getPayload } from './payload'
+import { getPageContent } from './payload'
 import { PAGE_DEFAULTS, textOr } from './content-defaults'
 import type { Locale } from './i18n'
 
@@ -27,8 +27,9 @@ interface PageSeoSource {
  * Pulls the matching group from the global, with code-level fallback.
  */
 export async function pageMetadata(locale: Locale, page: PageKey): Promise<Metadata> {
-  const payload = await getPayload()
-  const content = await payload.findGlobal({ slug: 'page-content', locale })
+  // Uses the cached fetcher so this DB call is deduped with the page
+  // component's own findGlobal('page-content') call in the same render.
+  const content = await getPageContent(locale)
 
   // PageContent groups are typed as `unknown` here — cast loosely.
   const group = ((content as unknown as Record<string, PageSeoSource | undefined>)[page] ?? {}) as PageSeoSource

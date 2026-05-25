@@ -1,4 +1,4 @@
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import { pageMetadata } from '@/lib/seo'
 import type { Locale } from '@/lib/i18n'
@@ -20,7 +20,7 @@ export default async function StoriesPage({ params }: Props) {
       collection: 'stories', locale: locale as Locale, sort: '-publishedAt', limit: 20,
       where: { _status: { equals: 'published' } },
     }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
   ])
 
   const s = page.stories ?? {}

@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { mediaUrl, mediaAlt } from '@/lib/media'
 import { RichText } from '@/components/RichText'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
@@ -22,7 +22,7 @@ export default async function AboutPage({ params }: Props) {
     payload.find({ collection: 'persons', sort: 'order', limit: 20, depth: 1 }),
     payload.find({ collection: 'certifications', locale: locale as Locale, limit: 20 }),
     payload.find({ collection: 'plants', locale: locale as Locale, limit: 10 }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
   ])
 
   const founder = persons.docs.find((p) => p.isFounder)

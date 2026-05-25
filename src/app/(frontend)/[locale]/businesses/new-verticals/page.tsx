@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import type { Locale } from '@/lib/i18n'
 
@@ -12,7 +12,7 @@ export default async function NewVerticalsPage({ params }: Props) {
 
   const [verticals, page] = await Promise.all([
     payload.find({ collection: 'verticals', locale: locale as Locale, limit: 10, where: { _status: { equals: 'published' } } }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
   ])
 
   const nv = page.newVerticals ?? {}

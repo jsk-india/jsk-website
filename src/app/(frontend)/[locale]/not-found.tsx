@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import { defaultLocale, type Locale } from '@/lib/i18n'
 
@@ -11,7 +11,7 @@ import { defaultLocale, type Locale } from '@/lib/i18n'
  */
 export default async function NotFound() {
   const payload = await getPayload()
-  const page = await payload.findGlobal({ slug: 'page-content', locale: defaultLocale as Locale })
+  const page = await getPageContent(defaultLocale as Locale)
   const nf = page.notFound ?? {}
   const d = PAGE_DEFAULTS.notFound
 

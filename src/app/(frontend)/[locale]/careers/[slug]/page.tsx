@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import { buildMetadata } from '@/lib/seo'
 import { loadFormStrings } from '@/lib/form-strings'
@@ -33,7 +33,7 @@ export default async function JobDetailPage({ params }: Props) {
       locale: locale as Locale,
       limit: 1,
     }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
     loadFormStrings(locale as Locale),
   ])
   const job = res.docs[0]

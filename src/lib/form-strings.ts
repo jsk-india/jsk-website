@@ -2,7 +2,7 @@
  * Build form `strings` props from the Forms CMS global, with hardcoded
  * fallbacks per field so missing translations never show blank labels.
  */
-import { getPayload } from './payload'
+import { getForms } from './payload'
 import { FORM_DEFAULTS, textOr } from './content-defaults'
 import type { Locale } from './i18n'
 import type { EnquiryStrings } from '@/app/(frontend)/[locale]/enquiry/EnquiryForm'
@@ -12,8 +12,9 @@ export async function loadFormStrings(locale: Locale): Promise<{
   enquiry: EnquiryStrings
   application: ApplicationStrings
 }> {
-  const payload = await getPayload()
-  const forms = await payload.findGlobal({ slug: 'forms', locale })
+  // Cached: if multiple components on the same page need form strings
+  // (unlikely but cheap to safeguard), only one DB call happens.
+  const forms = await getForms(locale)
 
   const e = (forms.enquiry ?? {}) as Partial<EnquiryStrings>
   const a = (forms.application ?? {}) as Partial<ApplicationStrings>

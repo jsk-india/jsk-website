@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import type { Locale } from '@/lib/i18n'
 
@@ -12,7 +12,7 @@ export default async function BusinessesPage({ params }: Props) {
 
   const [categories, page] = await Promise.all([
     payload.find({ collection: 'product-categories', locale: locale as Locale, sort: 'order', limit: 20 }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
   ])
 
   const b = page.businesses ?? {}

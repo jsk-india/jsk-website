@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { PAGE_DEFAULTS, textOr, arrayOr } from '@/lib/content-defaults'
 import { pageMetadata } from '@/lib/seo'
 import type { Locale } from '@/lib/i18n'
@@ -22,7 +22,7 @@ export default async function CareersPage({ params }: Props) {
       collection: 'job-openings', locale: locale as Locale, sort: '-postedAt', limit: 50,
       where: { isActive: { equals: true }, _status: { equals: 'published' } },
     }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
   ])
 
   const c = page.careers ?? {}

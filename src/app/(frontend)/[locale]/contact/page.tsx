@@ -1,4 +1,4 @@
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { PAGE_DEFAULTS, textOr, arrayOr } from '@/lib/content-defaults'
 import { pageMetadata } from '@/lib/seo'
 import type { Locale } from '@/lib/i18n'
@@ -33,7 +33,7 @@ export default async function ContactPage({ params }: Props) {
 
   const [settings, page] = await Promise.all([
     payload.findGlobal({ slug: 'site-settings', locale: locale as Locale }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
   ])
 
   const addresses = arrayOr(settings.addresses as Address[] | null | undefined, ADDRESS_FALLBACKS)

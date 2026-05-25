@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { mediaUrl, mediaAlt } from '@/lib/media'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import { buildMetadata } from '@/lib/seo'
@@ -29,7 +29,7 @@ export default async function CategoryPage({ params }: Props) {
       locale: locale as Locale,
       limit: 1,
     }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
   ])
   const cat = cats.docs[0]
   if (!cat) notFound()

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { RichText } from '@/components/RichText'
 import { mediaUrl, mediaAlt } from '@/lib/media'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
@@ -37,7 +37,7 @@ export default async function NewsDetailPage({ params }: Props) {
       depth: 2,
       limit: 1,
     }),
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
   ])
   const article = res.docs[0]
   if (!article) notFound()

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { getPayload } from '@/lib/payload'
+import { getPayload, getPageContent } from '@/lib/payload'
 import { PAGE_DEFAULTS, textOr } from '@/lib/content-defaults'
 import { pageMetadata } from '@/lib/seo'
 import { loadFormStrings } from '@/lib/form-strings'
@@ -23,7 +23,7 @@ export default async function EnquiryPage({ params, searchParams }: Props) {
 
   const payload = await getPayload()
   const [page, formStrings] = await Promise.all([
-    payload.findGlobal({ slug: 'page-content', locale: locale as Locale }),
+    getPageContent(locale as Locale),
     loadFormStrings(locale as Locale),
   ])
   const e = page.enquiry ?? {}
