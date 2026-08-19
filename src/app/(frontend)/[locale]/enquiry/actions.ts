@@ -1,6 +1,7 @@
 'use server'
 
 import { getPayload } from '@/lib/payload'
+import { readForm } from '@/lib/form-validation'
 
 export interface EnquiryState {
   success: boolean
@@ -11,27 +12,22 @@ export async function submitEnquiry(
   _prev: EnquiryState,
   formData: FormData,
 ): Promise<EnquiryState> {
-  const name = formData.get('name') as string
-  const email = formData.get('email') as string
-  const phone = formData.get('phone') as string
-  const company = formData.get('company') as string
-  const country = formData.get('country') as string
-  const message = formData.get('message') as string
-  const source = formData.get('source') as string
-
-  // Basic validation
-  if (!name || !email || !message) {
-    return { success: false, error: 'Name, email, and message are required.' }
-  }
-  if (!email.includes('@')) {
-    return { success: false, error: 'Please enter a valid email address.' }
-  }
+  const parsed = readForm(formData, {
+    name:    { type: 'string', required: true,  maxLength: 200 },
+    email:   { type: 'email',  required: true,  maxLength: 320 },
+    phone:   { type: 'string',                  maxLength: 40 },
+    company: { type: 'string',                  maxLength: 200 },
+    country: { type: 'string',                  maxLength: 100 },
+    message: { type: 'string', required: true,  maxLength: 5000, minLength: 5 },
+    source:  { type: 'string',                  maxLength: 100 },
+  })
+  if (!parsed.ok) return { success: false, error: parsed.error }
 
   try {
     const payload = await getPayload()
     await payload.create({
       collection: 'enquiries',
-      data: { name, email, phone, company, country, message, source, status: 'new' },
+      data: { ...parsed.data, status: 'new' },
     })
     return { success: true }
   } catch (err) {
