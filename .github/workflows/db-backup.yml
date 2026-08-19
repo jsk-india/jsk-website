@@ -1,0 +1,118 @@
+name: DB Backup
+
+# Off-provider Postgres backup: pg_dump → Cloudflare R2.
+# See docs/BACKUPS.md for the full setup, restore procedure, and rationale.
+#
+# Schedule: 03:00 UTC on the 1st of every month.
+# Retention: keeps the most recent 12 backups, prunes older ones.
+
+on:
+  schedule:
+    - cron: '0 3 1 * *'
+  workflow_dispatch: {}   # manual trigger from the Actions tab
+
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    name: Dump and upload
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      # All values come from GitHub repo secrets — see docs/BACKUPS.md
+      DATABASE_URI:          ${{ secrets.BACKUP_DATABASE_URI }}
+      R2_ENDPOINT:           ${{ secrets.BACKUP_R2_ENDPOINT }}
+      R2_BUCKET:             ${{ secrets.BACKUP_R2_BUCKET }}
+      AWS_ACCESS_KEY_ID:     ${{ secrets.BACKUP_R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION:    auto
+      # Keep the last N monthly backups; prune anything older.
+      RETENTION_COUNT: 12
+
+    steps:
+      - name: Sanity-check secrets
+        run: |
+          set -e
+          for var in DATABASE_URI R2_ENDPOINT R2_BUCKET AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY; do
+            if [ -z "${!var}" ]; then
+              echo "::error::Missing required secret: $var (see docs/BACKUPS.md)"
+              exit 1
+            fi
+          done
+          echo "All backup secrets present."
+
+      - name: Install PostgreSQL 16 client
+        run: |
+          set -e
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsS https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+            | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends postgresql-client-16
+          pg_dump --version
+
+      - name: Run pg_dump
+        id: dump
+        run: |
+          set -e
+          FILENAME="jsk-$(date -u +%Y%m%dT%H%M%SZ).dump"
+          echo "Dumping to $FILENAME ..."
+          pg_dump "$DATABASE_URI" \
+            --no-owner \
+            --no-acl \
+            --format=custom \
+            --compress=9 \
+            --file="$FILENAME"
+          SIZE=$(ls -lh "$FILENAME" | awk '{print $5}')
+          echo "filename=$FILENAME" >> "$GITHUB_OUTPUT"
+          echo "size=$SIZE"         >> "$GITHUB_OUTPUT"
+          echo "Dump complete: $FILENAME ($SIZE)"
+
+      - name: Upload to R2
+        run: |
+          set -e
+          FILENAME="${{ steps.dump.outputs.filename }}"
+          aws s3 cp "$FILENAME" "s3://$R2_BUCKET/db-backups/$FILENAME" \
+            --endpoint-url="$R2_ENDPOINT" \
+            --only-show-errors
+          echo "Uploaded to s3://$R2_BUCKET/db-backups/$FILENAME"
+
+      - name: Prune old backups (keep last $RETENTION_COUNT)
+        run: |
+          set -e
+          echo "Listing existing backups ..."
+          # List, sort newest-first, skip the first RETENTION_COUNT, delete the rest.
+          KEYS=$(aws s3api list-objects-v2 \
+            --bucket "$R2_BUCKET" \
+            --prefix "db-backups/" \
+            --endpoint-url "$R2_ENDPOINT" \
+            --query 'reverse(sort_by(Contents || `[]`, &LastModified))[*].Key' \
+            --output text || true)
+
+          COUNT=0
+          for KEY in $KEYS; do
+            COUNT=$((COUNT + 1))
+            if [ "$COUNT" -le "$RETENTION_COUNT" ]; then
+              echo "keep   $KEY"
+            else
+              echo "delete $KEY"
+              aws s3 rm "s3://$R2_BUCKET/$KEY" \
+                --endpoint-url "$R2_ENDPOINT" \
+                --only-show-errors
+            fi
+          done
+          echo "Retention pass done (kept up to $RETENTION_COUNT, found $COUNT total)."
+
+      - name: Summary
+        run: |
+          {
+            echo "### DB Backup succeeded"
+            echo ""
+            echo "- **File:** \`${{ steps.dump.outputs.filename }}\`"
+            echo "- **Size:** ${{ steps.dump.outputs.size }}"
+            echo "- **Bucket:** \`${R2_BUCKET}/db-backups/\`"
+            echo "- **Retention:** last ${RETENTION_COUNT} kept"
+          } >> "$GITHUB_STEP_SUMMARY"
