@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/adityakoukuntla25/jsk-website/security/policy
+    about: Please report security issues privately, not via public issues. See SECURITY.md.
+  - name: How-to question (admin / content editing)
+    url: https://github.com/adityakoukuntla25/jsk-website/blob/main/docs/ADMIN_GUIDE.md
+    about: The admin guide covers most content-editing questions.

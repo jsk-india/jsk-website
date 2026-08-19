@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-typecheck:
+    name: Lint and typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Payload types
+        # Payload types are gitignored-generated in some setups; ensure they exist
+        # before typecheck. Safe to run even if types are committed.
+        run: pnpm payload generate:types
+        env:
+          # Payload's type generator needs a DATABASE_URI even if it never connects.
+          # Use a dummy value; the CLI won't actually query.
+          DATABASE_URI: postgresql://ci:ci@localhost:5432/ci
+          PAYLOAD_SECRET: ci-only-not-a-real-secret
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+
+  # Uncomment when you add a test suite (Vitest, Playwright, etc.)
+  # test:
+  #   name: Tests
+  #   runs-on: ubuntu-latest
+  #   needs: lint-and-typecheck
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: pnpm/action-setup@v4
+  #       with: { version: 9 }
+  #     - uses: actions/setup-node@v4
+  #       with: { node-version: 20, cache: pnpm }
+  #     - run: pnpm install --frozen-lockfile
+  #     - run: pnpm test
