@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { getPayload } from '@/lib/payload'
+import { getNavigation, getSiteSettings } from '@/lib/payload'
 import { localizeHref } from '@/lib/i18n'
 import { isMedia } from '@/lib/media'
 import { resolveLanguages } from '@/lib/languages'
@@ -11,43 +11,39 @@ import type { Locale } from '@/lib/i18n'
 
 interface Props { locale: Locale }
 
-type NavItem = {
-  label?: string | null
-  href?: string | null
-  children?: { label?: string | null; href?: string | null }[] | null
-}
+/**
+ * Hardcoded fallback used when the CMS Navigation global has no header
+ * items configured yet (fresh DB, or an admin accidentally emptied it).
+ * Kept at module scope so it isn't recreated on every render.
+ */
+const FALLBACK_NAV: readonly MobileNavItem[] = [
+  { label: 'Home',       href: '/' },
+  { label: 'About',      href: '/about' },
+  { label: 'Businesses', href: '/businesses' },
+  { label: 'Clients',    href: '/clients' },
+  { label: 'Investors',  href: '/investors' },
+  { label: 'News',       href: '/news' },
+  { label: 'Careers',    href: '/careers' },
+  { label: 'Contact',    href: '/contact' },
+]
 
 export async function Header({ locale }: Props) {
   const prefix = `/${locale}`
-  const payload = await getPayload()
   const [nav, settings] = await Promise.all([
-    payload.findGlobal({ slug: 'navigation', locale }),
-    payload.findGlobal({ slug: 'site-settings', depth: 1 }),
+    getNavigation(locale),
+    getSiteSettings(locale, 1),
   ])
   const logoMedia = isMedia(settings.logo) ? settings.logo : null
-  const brochureUrl = isMedia(settings.brochure) ? settings.brochure.url : null
-  const navItems = (nav.header ?? []) as NavItem[]
+  const brochureUrl = isMedia(settings.brochure) ? settings.brochure.url ?? null : null
   const languages = resolveLanguages(settings.languages)
 
-  /**
-   * The same nav items we render on desktop, falling back to a hardcoded
-   * list when CMS Navigation hasn't been set up yet. Mobile drawer uses
-   * this directly so the two stay in sync.
-   */
-  const FALLBACK_NAV: MobileNavItem[] = [
-    { label: 'Home',       href: '/' },
-    { label: 'About',      href: '/about' },
-    { label: 'Businesses', href: '/businesses' },
-    { label: 'Clients',    href: '/clients' },
-    { label: 'Investors',  href: '/investors' },
-    { label: 'News',       href: '/news' },
-    { label: 'Careers',    href: '/careers' },
-    { label: 'Contact',    href: '/contact' },
-  ]
-  const effectiveNav: MobileNavItem[] = navItems.length > 0 ? navItems : FALLBACK_NAV
+  // Single source of truth: use CMS items if present, else fallback.
+  // Both desktop and mobile nav consume this — never diverge again.
+  const effectiveNav: MobileNavItem[] =
+    nav.header && nav.header.length > 0 ? nav.header : [...FALLBACK_NAV]
   const ctaLabel = nav.ctaLabel ?? 'Enquire Now'
   const ctaHref = nav.ctaHref ?? '/enquiry'
-  const announcement = nav.announcement as { enabled?: boolean; message?: string; link?: string } | null
+  const announcement = nav.announcement ?? null
 
   return (
     <>
@@ -84,7 +80,7 @@ export async function Header({ locale }: Props) {
           {/* Nav — from CMS, fallback to defaults. Active item is
               highlighted via <NavLink> (reads usePathname). */}
           <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-            {(navItems.length > 0 ? navItems : FALLBACK_NAV).map((item, i) => (
+            {effectiveNav.map((item, i) => (
               <div key={i} className="relative group">
                 <NavLink href={item.href ?? '#'} prefix={prefix}>
                   {item.label}
