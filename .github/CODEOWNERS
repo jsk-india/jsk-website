@@ -1,0 +1,29 @@
+# CODEOWNERS
+#
+# GitHub uses this file to auto-request reviews on PRs.
+# Lines are matched in order; last match wins.
+#
+# Replace the placeholder handles below with your actual team members'
+# GitHub usernames or a team like @your-org/website-maintainers.
+
+# Default owners for everything in the repo
+*                             @REPLACE-ME
+
+# Payload schema — extra scrutiny because migrations are irreversible in practice
+/src/collections/             @REPLACE-ME
+/src/globals/                 @REPLACE-ME
+/src/migrations/              @REPLACE-ME
+/payload.config.ts            @REPLACE-ME
+
+# Infrastructure / deploy config
+/vercel.json                  @REPLACE-ME
+/next.config.ts               @REPLACE-ME
+/docker-compose.yml           @REPLACE-ME
+/.github/                     @REPLACE-ME
+
+# Docs — anyone can edit, but keep owners in the loop
+/README.md                    @REPLACE-ME
+/ARCHITECTURE.md              @REPLACE-ME
+/HANDOVER.md                  @REPLACE-ME
+/SECURITY.md                  @REPLACE-ME
+/docs/                        @REPLACE-ME
